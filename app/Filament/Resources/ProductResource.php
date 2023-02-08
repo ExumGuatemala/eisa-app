@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
-use App\Models\User;
+use App\Filament\Resources\ProductResource\Pages;
+use App\Filament\Resources\ProductResource\RelationManagers;
+use App\Filament\Resources\TextInput\Mask;
+use Filament\Forms\Components\TextInput;
+use App\Models\Product;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
@@ -13,37 +15,37 @@ use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class UserResource extends Resource
+class ProductResource extends Resource
 {
-    protected static ?string $model = User::class;
+    protected static ?string $model = Product::class;
 
-    protected static ?string $navigationGroup = 'Administración';
+    protected static ?string $navigationGroup = 'Ventas';
     protected static ?string $navigationIcon = 'heroicon-o-collection';
 
-    protected static ?string $modelLabel = 'Usuario';
-    protected static ?string $pluralModelLabel = 'Usuarios';
-    protected static ?string $navigationLabel = 'Usuarios';
+    protected static ?string $modelLabel = 'Producto';
+    protected static ?string $pluralModelLabel = 'Productos';
+    protected static ?string $navigationLabel = 'Productos';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->required()
                     ->maxLength(255)
                     ->label("Nombre"),
-                Forms\Components\TextInput::make('email')
-                    ->email()
+                TextInput::make('existence')
+                    ->numeric()
                     ->required()
+                    ->label("Existencia"),
+                TextInput::make('order')
+                    ->numeric()
                     ->maxLength(255)
-                    ->label("Correo Electrónico"),
-                Forms\Components\DateTimePicker::make('email_verified_at')
-                ->label("Fecha de Verificación de Cuenta"),
-                Forms\Components\TextInput::make('password')
-                    ->password()
+                    ->label("Orden de Visualización"),
+                TextInput::make('sale_price')
                     ->required()
-                    ->maxLength(255)
-                    ->label("Contraseña"),
+                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
+                    ->label("Precio de Venta"),
             ]);
     }
 
@@ -53,19 +55,20 @@ class UserResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label("Nombre"),
-                Tables\Columns\TextColumn::make('email')
-                    ->label("Correo Electrónico"),
+                Tables\Columns\TextColumn::make('existence')
+                    ->label("Existencia"),
+                Tables\Columns\TextColumn::make('sale_price')
+                    ->money('gtq', true)
+                    ->label("Precio de Venta"),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->label("Fecha de Creación"),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->label("Fecha de Actualización"),
             ])
             ->filters([
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -77,7 +80,7 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageUsers::route('/'),
+            'index' => Pages\ManageProducts::route('/'),
         ];
     }
 }
