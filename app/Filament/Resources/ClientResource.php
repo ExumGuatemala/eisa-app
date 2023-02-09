@@ -68,8 +68,8 @@ class ClientResource extends Resource
 
                 Select::make('departamentoId')
                     ->label('Departamento')
-                    ->afterStateHydrated(function (Model $record, Select $component) {
-                        $municipio = Municipio::find($record->municipio_id);
+                    ->afterStateHydrated(function (Model|null $record, Select $component) {
+                        $municipio = $record == null ? $record : Municipio::find($record->municipio_id);
                         if(!$municipio){
                             $component->state(13);
                         } else {
