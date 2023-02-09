@@ -5,12 +5,19 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ClientResource\Pages;
 use App\Filament\Resources\ClientResource\RelationManagers;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Columns\TextColumn;
 use App\Models\Client;
+use App\Models\Departamento;
+use App\Models\Municipio;
+use Closure;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -44,9 +51,6 @@ class ClientResource extends Resource
                 TextInput::make('key')
                     ->maxLength(255)
                     ->label("Código"),
-                TextInput::make('address')
-                    ->maxLength(255)
-                    ->label("Dirección"),
                 TextInput::make('phone1')
                     ->tel()
                     ->required()
@@ -54,8 +58,41 @@ class ClientResource extends Resource
                     ->label("Teléfono 1"),
                 TextInput::make('phone2')
                     ->tel()
+                    ->required()
                     ->maxLength(255)
                     ->label("Teléfono 2"),
+                TextInput::make('address')
+                    ->required()
+                    ->columnSpan('full')
+                    ->label("Dirección"),
+
+                Select::make('departamentoId')
+                    ->label('Departamento')
+                    ->afterStateHydrated(function (Model $record, Select $component) {
+                        $municipio = Municipio::find($record->municipio_id);
+                        if(!$municipio){
+                            $component->state(13);
+                        } else {
+                            $component->state($municipio->departamento->id);
+                        }
+                    })
+                    ->options(Departamento::all()->pluck('name','id')->toArray())
+                    ->reactive()
+                    ->afterStateUpdated(fn (callable $set) => $set('municipioId', null)),
+
+                Select::make('municipioId')
+                    ->label('Municipio')
+                    ->relationship('municipio', 'name')
+                    ->options(function (callable $get) {
+                        $departamento = Departamento::find($get('departamentoId'));
+
+                        if(!$departamento){
+                            return Municipio::all()->pluck('name','id');
+                        }
+
+                        return $departamento->municipios->pluck('name','id');
+
+                    }),
             ]);
     }
 
@@ -63,17 +100,17 @@ class ClientResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label("Nombre"),
-                Tables\Columns\TextColumn::make('lastname')
+                TextColumn::make('lastname')
                     ->label("Apellido"),
-                Tables\Columns\TextColumn::make('key')
+                TextColumn::make('key')
                     ->label("Código"),
-                Tables\Columns\TextColumn::make('phone1')
+                TextColumn::make('phone1')
                     ->label("Teléfono 1"),
-                    Tables\Columns\TextColumn::make('email')
+                TextColumn::make('email')
                     ->label("Correo Electrónico"),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->label("Fecha de Creación"),
             ])

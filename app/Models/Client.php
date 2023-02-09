@@ -18,4 +18,12 @@ class Client extends Model
         'phone1',
         'phone2',
     ];
+
+    /**
+     * Get the municipio for the client.
+     */
+    public function municipio()
+    {
+        return $this->belongsTo(Municipio::class);
+    }
 }
