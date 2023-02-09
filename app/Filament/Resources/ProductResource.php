@@ -56,7 +56,8 @@ class ProductResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label("Nombre"),
+                    ->label("Nombre")
+                    ->searchable(['name']),
                 TextColumn::make('sale_price')
                     ->money('gtq', true)
                     ->label("Precio de Venta"),

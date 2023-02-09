@@ -39,11 +39,8 @@ class ClientResource extends Resource
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255)
-                    ->label("Nombre"),
-                TextInput::make('lastname')
-                    ->required()
-                    ->maxLength(255)
-                    ->label("Apellido"),
+                    ->label("Nombre Completo")
+                    ->columnSpan('full'),
                 TextInput::make('email')
                     ->email()
                     ->maxLength(255)
@@ -101,9 +98,8 @@ class ClientResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label("Nombre"),
-                TextColumn::make('lastname')
-                    ->label("Apellido"),
+                    ->label("Nombre Completo")
+                    ->searchable(['name']),
                 TextColumn::make('key')
                     ->label("Código"),
                 TextColumn::make('phone1')
