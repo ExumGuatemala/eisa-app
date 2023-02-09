@@ -6,6 +6,7 @@ use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers;
 use App\Filament\Resources\TextInput\Mask;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
 use App\Models\Product;
 use Filament\Forms;
 use Filament\Resources\Form;
@@ -33,7 +34,12 @@ class ProductResource extends Resource
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255)
+                    ->columnSpan('full')
                     ->label("Nombre"),
+                TextInput::make('sale_price')
+                    ->required()
+                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
+                    ->label("Precio de Venta"),
                 TextInput::make('existence')
                     ->numeric()
                     ->required()
@@ -42,10 +48,6 @@ class ProductResource extends Resource
                     ->numeric()
                     ->maxLength(255)
                     ->label("Orden de Visualización"),
-                TextInput::make('sale_price')
-                    ->required()
-                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
-                    ->label("Precio de Venta"),
             ]);
     }
 
@@ -53,14 +55,14 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label("Nombre"),
-                Tables\Columns\TextColumn::make('existence')
-                    ->label("Existencia"),
-                Tables\Columns\TextColumn::make('sale_price')
+                TextColumn::make('sale_price')
                     ->money('gtq', true)
                     ->label("Precio de Venta"),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('existence')
+                    ->label("Existencia"),
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->label("Fecha de Creación"),
             ])
