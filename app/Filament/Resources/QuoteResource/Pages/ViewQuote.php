@@ -9,6 +9,13 @@ use Filament\Resources\Pages\ViewRecord;
 class ViewQuote extends ViewRecord
 {
     protected static string $resource = QuoteResource::class;
+    protected $listeners = ['refresh'=>'refreshForm'];
+
+    public function refreshForm()
+    {
+        $this->fillForm();
+    }
+
 
     protected function getActions(): array
     {

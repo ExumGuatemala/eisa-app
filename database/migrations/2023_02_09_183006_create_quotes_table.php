@@ -34,6 +34,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('quote_id')->nullable();
             $table->unsignedBigInteger('product_id')->nullable();
+            $table->integer('quantity')->nullable();
             $table->timestamps();
 
             $table->foreign('quote_id')->references('id')->on('quotes');

@@ -9,6 +9,12 @@ use Filament\Resources\Pages\EditRecord;
 class EditQuote extends EditRecord
 {
     protected static string $resource = QuoteResource::class;
+    protected $listeners = ['refresh'=>'refreshForm'];
+
+    public function refreshForm()
+    {
+        $this->fillForm();
+    }
 
     protected function getActions(): array
     {
