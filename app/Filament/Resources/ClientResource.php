@@ -58,6 +58,9 @@ class ClientResource extends Resource
                     ->required()
                     ->maxLength(255)
                     ->label("Teléfono 2"),
+                Select::make('tipoPrecioId')
+                    ->label('Tipo de Precio')
+                    ->relationship('priceType', 'name'),
                 TextInput::make('address')
                     ->required()
                     ->columnSpan('full')

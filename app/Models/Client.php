@@ -26,4 +26,12 @@ class Client extends Model
     {
         return $this->belongsTo(Municipio::class);
     }
+
+    /**
+     * Get the price type for the client.
+     */
+    public function priceType()
+    {
+        return $this->belongsTo(PriceType::class, 'pricetype_id');
+    }
 }
