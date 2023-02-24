@@ -20,7 +20,7 @@ class QuoteStateResource extends Resource
     protected static ?string $model = QuoteState::class;
 
     protected static ?string $navigationGroup = 'Administración';
-    protected static ?string $navigationIcon = 'heroicon-o-collection';
+    protected static ?string $navigationIcon = 'heroicon-o-cog';
     protected static ?int $navigationSort = 2;
 
     protected static ?string $modelLabel = 'Estado de Cotización';

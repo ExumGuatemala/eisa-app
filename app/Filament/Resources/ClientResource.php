@@ -26,7 +26,7 @@ class ClientResource extends Resource
     protected static ?string $model = Client::class;
 
     protected static ?string $navigationGroup = 'Ventas';
-    protected static ?string $navigationIcon = 'heroicon-o-collection';
+    protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
     protected static ?string $modelLabel = 'Cliente';
     protected static ?string $pluralModelLabel = 'Clientes';
@@ -46,16 +46,20 @@ class ClientResource extends Resource
                     ->maxLength(255)
                     ->label("Correo Electrónico"),
                 TextInput::make('key')
-                    ->maxLength(255)
-                    ->label("Código"),
+                    ->label("Código")
+                    ->disabled()
+                    ->afterStateHydrated(function (TextInput $component, $state) {
+                        if(!$state){
+                            $component->state(strtoupper(substr(bin2hex(random_bytes(ceil(8 / 2))), 0, 8)));
+                        }
+                    }),
                 TextInput::make('phone1')
-                    ->tel()
+                    ->mask(fn (TextInput\Mask $mask) => $mask->pattern('0000-0000'))
                     ->required()
                     ->maxLength(255)
                     ->label("Teléfono 1"),
                 TextInput::make('phone2')
-                    ->tel()
-                    ->required()
+                    ->mask(fn (TextInput\Mask $mask) => $mask->pattern('0000-0000'))
                     ->maxLength(255)
                     ->label("Teléfono 2"),
                 Select::make('tipoPrecioId')
@@ -109,7 +113,8 @@ class ClientResource extends Resource
                 TextColumn::make('key')
                     ->label("Código"),
                 TextColumn::make('phone1')
-                    ->label("Teléfono 1"),
+                    ->label("Teléfono 1")
+                    ->formatStateUsing(fn (string $state): string => __(substr($state, 0, 4) . '-' . substr($state, 4))),
                 TextColumn::make('email')
                     ->label("Correo Electrónico"),
                 TextColumn::make('created_at')

@@ -20,7 +20,7 @@ class PriceTypeResource extends Resource
     protected static ?string $model = PriceType::class;
 
     protected static ?string $navigationGroup = 'Administración';
-    protected static ?string $navigationIcon = 'heroicon-o-collection';
+    protected static ?string $navigationIcon = 'heroicon-o-cog';
     protected static ?int $navigationSort = 3;
 
     protected static ?string $modelLabel = 'Tipo de Precio';
