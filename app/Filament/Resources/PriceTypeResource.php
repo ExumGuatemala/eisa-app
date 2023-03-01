@@ -19,9 +19,9 @@ class PriceTypeResource extends Resource
 {
     protected static ?string $model = PriceType::class;
 
-    protected static ?string $navigationGroup = 'Administración';
+    protected static ?string $navigationGroup = 'Ventas';
     protected static ?string $navigationIcon = 'heroicon-o-cog';
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 4;
 
     protected static ?string $modelLabel = 'Tipo de Precio';
     protected static ?string $pluralModelLabel = 'Tipos de Precio';
@@ -32,8 +32,8 @@ class PriceTypeResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')
-                    ->label('Nombre')
-                    ->required(),
+                    ->required()
+                    ->columnSpan('full'),
             ]);
     }
 
@@ -60,10 +60,20 @@ class PriceTypeResource extends Resource
             ]);
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            RelationManagers\ProductsRelationManager::class,
+        ];
+    }
+
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManagePriceTypes::route('/'),
+            'index' => Pages\ListPriceTypes::route('/'),
+            'create' => Pages\CreatePriceType::route('/create'),
+            'view' => Pages\ViewPriceType::route('/{record}'),
+            'edit' => Pages\EditPriceType::route('/{record}/edit'),
         ];
     }
 }

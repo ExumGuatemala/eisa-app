@@ -20,4 +20,12 @@ class PriceType extends Model
     {
         return $this->hasMany(Client::class);
     }
+
+    /**
+     * The quotes that belong to the Product.
+     */
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'products_pricetypes', 'pricetype_id', 'product_id')->withPivot('price');
+    }
 }

@@ -21,6 +21,14 @@ class Product extends Model
      */
     public function quotes()
     {
-        return $this->belongsToMany(Quote::class, 'quotes_products', 'quote_id', 'product_id')->withPivot('quantity');
+        return $this->belongsToMany(Quote::class, 'quotes_products_pricetypes', 'quote_id', 'product_id')->withPivot('quantity');
+    }
+
+    /**
+     * The quotes that belong to the Product.
+     */
+    public function pricetypes()
+    {
+        return $this->belongsToMany(PriceType::class, 'products_pricetypes', 'pricetype_id', 'product_id')->withPivot('price');
     }
 }

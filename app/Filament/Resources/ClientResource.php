@@ -62,7 +62,7 @@ class ClientResource extends Resource
                     ->mask(fn (TextInput\Mask $mask) => $mask->pattern('0000-0000'))
                     ->maxLength(255)
                     ->label("Teléfono 2"),
-                Select::make('tipoPrecioId')
+                Select::make('tipoClienteId')
                     ->label('Tipo de Cliente')
                     ->relationship('type', 'name'),
                 Select::make('tipoPrecioId')

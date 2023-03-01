@@ -4,9 +4,9 @@ namespace App\Filament\Resources\PriceTypeResource\Pages;
 
 use App\Filament\Resources\PriceTypeResource;
 use Filament\Pages\Actions;
-use Filament\Resources\Pages\ManageRecords;
+use Filament\Resources\Pages\ListRecords;
 
-class ManagePriceTypes extends ManageRecords
+class ListPriceTypes extends ListRecords
 {
     protected static string $resource = PriceTypeResource::class;
 
