@@ -3,25 +3,37 @@
 namespace App\Services;
 
 use App\Models\Quote;
-use App\Models\Product;
+use App\Repositories\ProductsPriceTypesRepository;
 
 class QuoteService
 {
-    public static function addToTotal(Quote $quote, $productId, $qty)
+    protected $productsPriceTypesRepository;
+
+    public function __construct()
     {
-        $product = Product::find($productId);
+        $this->productsPriceTypesRepository = new ProductsPriceTypesRepository;
+    }
+
+    public function addToTotal(Quote $quote, $productId, $qty)
+    {
+        $price = $this->productsPriceTypesRepository->getProductPrice($quote->client_id, $productId);
         $total = $quote->total;
-        $total = $total + (float)($product->sale_price * $qty);
+        $total = $total + (float)($price * $qty);
         $quote->total = $total;
         $quote->save();
     }
 
-    public static function substractFromTotal(Quote $quote, $productId, $qty)
+    public function substractFromTotal(Quote $quote, $productId, $qty)
     {
-        $product = Product::find($productId);
+        $price = $this->productsPriceTypesRepository->getProductPrice($quote->client_id, $productId);
         $total = $quote->total;
-        $total = $total - (float)($product->sale_price * $qty);
+        $total = $total - (float)($price * $qty);
         $quote->total = $total;
         $quote->save();
+    }
+
+    public function getProductPriceTypePrice($clientId, $productId)
+    {
+        return $this->productsPriceTypesRepository->getProductPrice($clientId, $productId);
     }
 }

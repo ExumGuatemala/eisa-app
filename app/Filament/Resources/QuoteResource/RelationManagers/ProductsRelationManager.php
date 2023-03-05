@@ -19,8 +19,14 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ProductsRelationManager extends RelationManager
 {
+    protected static $quoteService;
+
     protected static string $relationship = 'products';
     protected static ?string $recordTitleAttribute = 'name';
+
+    public function __construct() {
+        static::$quoteService = new QuoteService();
+    }
 
     public static function form(Form $form): Form
     {
@@ -37,17 +43,21 @@ class ProductsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                TextColumn::make('name'),
+                TextColumn::make('name')
+                    ->label("Nombre"),
                 TextColumn::make('sale_price')
                     ->money('gtq', true)
-                    ->label("Precio"),
+                    ->label("Precio")
+                    ->getStateUsing(function (Model $record, RelationManager $livewire) {
+                        return self::$quoteService->getProductPriceTypePrice($livewire->ownerRecord->client_id, $record->product_id);
+                    }),
                 TextColumn::make('quantity')
                     ->label("Cantidad"),
                 TextColumn::make('subtotal')
                     ->money('gtq', true)
                     ->label("SubTotal")
-                    ->getStateUsing(function (Model $record) {
-                        return $record->quantity * $record->sale_price;
+                    ->getStateUsing(function (Model $record, RelationManager $livewire) {
+                        return $record->quantity * self::$quoteService->getProductPriceTypePrice($livewire->ownerRecord->client_id, $record->product_id);
                     }),
             ])
             ->filters([
@@ -59,18 +69,19 @@ class ProductsRelationManager extends RelationManager
                         $action->getRecordSelect(),
                         TextInput::make('quantity')
                             ->required()
+                            ->label('Cantidad')
                             ->default(1),
                     ])
                     ->preloadRecordSelect()
                     ->after(function (RelationManager $livewire) {
-                        QuoteService::addToTotal($livewire->ownerRecord, $livewire->mountedTableActionData['recordId'], $livewire->mountedTableActionData['quantity']);
+                        self::$quoteService->addToTotal($livewire->ownerRecord, $livewire->mountedTableActionData['recordId'], $livewire->mountedTableActionData['quantity']);
                         $livewire->emit('refresh');
                     }),
             ])
             ->actions([
                 DetachAction::make()
                     ->before(function (RelationManager $livewire) {
-                        QuoteService::substractFromTotal($livewire->ownerRecord, $livewire->cachedMountedTableActionRecord['product_id'], $livewire->cachedMountedTableActionRecord['quantity']);
+                        self::$quoteService->substractFromTotal($livewire->ownerRecord, $livewire->cachedMountedTableActionRecord['product_id'], $livewire->cachedMountedTableActionRecord['quantity']);
                         $livewire->emit('refresh');
                     }),
             ])

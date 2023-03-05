@@ -12,7 +12,7 @@ class PriceTypeService
     {
         $products = Product::all();
         foreach($products as $product){
-            $pricetype->products()->attach($product->id, ['price' => 0]);
+            $pricetype->products()->attach($product->id, ['price' => $product->sale_price]);
         }
 
     }
