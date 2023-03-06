@@ -10,11 +10,10 @@
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.19",
         "laravel/sanctum": "^3.0",
-        "laravel/tinker": "^2.7",
-        "doctrine/dbal": "^3.5"
+        "laravel/tinker": "^2.7"
     },
     "require-dev": {
-        "doctrine/dbal": "^3.5",
+        "doctrine/dbal": "^3.6",
         "fakerphp/faker": "^1.9.1",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.0.1",
