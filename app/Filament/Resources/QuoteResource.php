@@ -44,14 +44,21 @@ class QuoteResource extends Resource
                     ->required(),
                 TextInput::make('created_at')
                     ->disabled()
-                    ->label('Fecha de Creación'),
+                    ->label('Fecha de Creación')
+                    ->hiddenOn('create'),
                 Select::make('stateId')
                     ->label('Estado')
                     ->options(QuoteState::all()->pluck('name', 'id'))
                     ->relationship('state', 'name')
-                    ->required(),
+                    ->disabled()
+                    ->afterStateHydrated(function (Select $component, $state) {
+                        if(!$state){
+                            $component->state(1);
+                        }
+                    }),
                 TextInput::make('total')
                     ->default(0)
+                    ->disabled()
                     ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2)),
             ]);
     }
@@ -87,7 +94,6 @@ class QuoteResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
