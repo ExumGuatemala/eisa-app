@@ -8,6 +8,7 @@ use App\Filament\Resources\TextInput\Mask;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\DateTimePicker;
 use App\Models\Quote;
 use App\Models\QuoteState;
 use App\Models\Client;
@@ -42,9 +43,10 @@ class QuoteResource extends Resource
                     ->options(Client::all()->pluck('name', 'id'))
                     ->relationship('client', 'name')
                     ->required(),
-                TextInput::make('created_at')
+                DateTimePicker::make('created_at')
                     ->disabled()
                     ->label('Fecha de Creación')
+                    ->displayFormat('d/m/Y H:i:s')
                     ->hiddenOn('create'),
                 Select::make('stateId')
                     ->label('Estado')
