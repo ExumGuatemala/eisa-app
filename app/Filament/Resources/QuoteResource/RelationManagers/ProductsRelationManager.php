@@ -12,7 +12,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Actions\AttachAction;
 use Filament\Tables\Actions\DetachAction;
+use Filament\Tables\Actions\EditAction;
 use App\Services\QuoteService;
+use App\Services\QuotesProductsService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -20,12 +22,14 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class ProductsRelationManager extends RelationManager
 {
     protected static $quoteService;
+    protected static $quotesProductsService;
 
     protected static string $relationship = 'products';
     protected static ?string $recordTitleAttribute = 'name';
 
     public function __construct() {
         static::$quoteService = new QuoteService();
+        static::$quotesProductsService = new QuotesProductsService();
     }
 
     public static function form(Form $form): Form
@@ -43,21 +47,20 @@ class ProductsRelationManager extends RelationManager
     {
         return $table
             ->columns([
+                TextColumn::make('id')
+                    ->label("ID"),
                 TextColumn::make('name')
                     ->label("Nombre"),
-                TextColumn::make('sale_price')
+                TextColumn::make('price')
                     ->money('gtq', true)
-                    ->label("Precio")
-                    ->getStateUsing(function (Model $record, RelationManager $livewire) {
-                        return self::$quoteService->getProductPriceTypePrice($livewire->ownerRecord->client_id, $record->product_id);
-                    }),
+                    ->label("Precio"),
                 TextColumn::make('quantity')
                     ->label("Cantidad"),
                 TextColumn::make('subtotal')
                     ->money('gtq', true)
                     ->label("SubTotal")
-                    ->getStateUsing(function (Model $record, RelationManager $livewire) {
-                        return $record->quantity * self::$quoteService->getProductPriceTypePrice($livewire->ownerRecord->client_id, $record->product_id);
+                    ->getStateUsing(function (Model $record) {
+                        return $record->quantity * $record->price;
                     }),
             ])
             ->filters([
@@ -74,14 +77,28 @@ class ProductsRelationManager extends RelationManager
                     ])
                     ->preloadRecordSelect()
                     ->after(function (RelationManager $livewire) {
-                        self::$quoteService->addToTotal($livewire->ownerRecord, $livewire->mountedTableActionData['recordId'], $livewire->mountedTableActionData['quantity']);
+                        //Update all prices in pivot table only if its price is zero (that means it was recently added)
+                        self::$quotesProductsService->updateAllPrices($livewire->ownerRecord->id, $livewire->ownerRecord->pricetype_id);
                         $livewire->emit('refresh');
                     }),
+
             ])
             ->actions([
+                EditAction::make()
+                    ->form(fn (EditAction $action): array => [
+                        TextInput::make('quantity')
+                            ->required()
+                            ->label('Cantidad')
+                            ->default(1),
+                    ])
+                    ->after(function (RelationManager $livewire) {
+                        //Update all prices in pivot table only if its price is zero (that means it was recently added)
+                        self::$quotesProductsService->updateAllPrices($livewire->ownerRecord->id, $livewire->ownerRecord->pricetype_id);
+                        $livewire->emit('refresh');
+                    }),
                 DetachAction::make()
-                    ->before(function (RelationManager $livewire) {
-                        self::$quoteService->substractFromTotal($livewire->ownerRecord, $livewire->cachedMountedTableActionRecord['product_id'], $livewire->cachedMountedTableActionRecord['quantity']);
+                    ->after(function (RelationManager $livewire) {
+                        self::$quotesProductsService->updateAllPrices($livewire->ownerRecord->id, $livewire->ownerRecord->pricetype_id);
                         $livewire->emit('refresh');
                     }),
             ])

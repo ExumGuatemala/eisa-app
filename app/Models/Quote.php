@@ -13,6 +13,7 @@ class Quote extends Model
         'total',
         'state_id',
         'client_id',
+        'pricetype_id'
     ];
 
     /**
@@ -29,6 +30,14 @@ class Quote extends Model
     public function client()
     {
         return $this->belongsTo(Client::class);
+    }
+
+    /**
+     * Get the price type of reference for the Quote
+     */
+    public function priceType()
+    {
+        return $this->belongsTo(PriceType::class, 'pricetype_id');
     }
 
     /**

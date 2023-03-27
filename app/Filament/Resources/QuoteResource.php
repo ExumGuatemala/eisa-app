@@ -9,14 +9,17 @@ use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\DateTimePicker;
-use App\Models\Quote;
-use App\Models\QuoteState;
-use App\Models\Client;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
+
 use Filament\Tables;
+use App\Models\Quote;
+use App\Models\QuoteState;
+use App\Models\Client;
+use App\Models\PriceType;
+
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -32,6 +35,7 @@ class QuoteResource extends Resource
     protected static ?string $pluralModelLabel = 'Cotizaciones';
     protected static ?string $navigationLabel = 'Cotizaciones';
 
+
     public static function form(Form $form): Form
     {
         return $form
@@ -42,10 +46,15 @@ class QuoteResource extends Resource
                     ->searchable()
                     ->options(Client::all()->pluck('name', 'id'))
                     ->relationship('client', 'name')
-                    ->required(),
+                    ->required()
+                    ->reactive()
+                    ->afterStateUpdated(function (callable $set, $get) {
+                        $client = Client::find(($get('clientId')));
+                        $set('pricetypeId', $client->pricetype_id);
+                    }),
                 DateTimePicker::make('created_at')
-                    ->disabled()
                     ->label('Fecha de Creación')
+                    ->disabled()
                     ->displayFormat('d/m/Y H:i:s')
                     ->hiddenOn('create'),
                 Select::make('stateId')
@@ -53,15 +62,21 @@ class QuoteResource extends Resource
                     ->options(QuoteState::all()->pluck('name', 'id'))
                     ->relationship('state', 'name')
                     ->disabled()
+                    ->hiddenOn('create'),
+                TextInput::make('total')
+                    ->default(0)
+                    ->disabled()
+                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
+                    ->hiddenOn('create'),
+                Select::make('pricetypeId')
+                    ->label('Tipo de Precio')
+                    ->options(PriceType::all()->pluck('name', 'id'))
+                    ->relationship('priceType', 'name')
                     ->afterStateHydrated(function (Select $component, $state) {
                         if(!$state){
                             $component->state(1);
                         }
                     }),
-                TextInput::make('total')
-                    ->default(0)
-                    ->disabled()
-                    ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2)),
             ]);
     }
 

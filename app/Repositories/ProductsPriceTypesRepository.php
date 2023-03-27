@@ -7,9 +7,8 @@ use App\Models\ProductsPriceTypes;
 
 class ProductsPriceTypesRepository
 {
-    public function getProductPrice($clientId, $productId)
+    public function getProductPrice($pricetypeId, $productId)
     {
-        $pricetypeId = Client::find($clientId)->pricetype_id;
         return ProductsPriceTypes::where('product_id', $productId)->where('pricetype_id', $pricetypeId)->get()[0]['price'];
     }
 }

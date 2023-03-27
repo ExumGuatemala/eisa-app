@@ -2,34 +2,34 @@
 
 namespace App\Services;
 
-use App\Models\Quote;
 use App\Repositories\ProductsPriceTypesRepository;
+use App\Repositories\QuoteRepository;
+use App\Repositories\QuotesProductsRepository;
 
 class QuoteService
 {
     protected $productsPriceTypesRepository;
+    protected $quoteRepository;
+    protected $quotesProductsRepository;
 
     public function __construct()
     {
         $this->productsPriceTypesRepository = new ProductsPriceTypesRepository;
+        $this->quoteRepository = new QuoteRepository;
+        $this->quotesProductsRepository = new QuotesProductsRepository;
     }
 
-    public function addToTotal(Quote $quote, $productId, $qty)
+    public function updateTotal($quoteId): string
     {
-        $price = $this->productsPriceTypesRepository->getProductPrice($quote->client_id, $productId);
-        $total = $quote->total;
-        $total = $total + (float)($price * $qty);
-        $quote->total = $total;
+        $quote = $this->quoteRepository->get($quoteId)[0];
+        $quote->total = 0;
+        $products = $this->quotesProductsRepository->allForQuote($quote->id);
+        foreach($products as $product)
+        {
+            $quote->total += $product->price * $product->quantity;
+        }
         $quote->save();
-    }
-
-    public function substractFromTotal(Quote $quote, $productId, $qty)
-    {
-        $price = $this->productsPriceTypesRepository->getProductPrice($quote->client_id, $productId);
-        $total = $quote->total;
-        $total = $total - (float)($price * $qty);
-        $quote->total = $total;
-        $quote->save();
+        return strval($quote->total);
     }
 
     public function getProductPriceTypePrice($clientId, $productId)
