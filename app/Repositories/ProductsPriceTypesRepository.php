@@ -11,4 +11,9 @@ class ProductsPriceTypesRepository
     {
         return ProductsPriceTypes::where('product_id', $productId)->where('pricetype_id', $pricetypeId)->get()[0]['price'];
     }
+
+    public function firstOrCreate($attributes)
+    {
+        return ProductsPriceTypes::firstOrCreate($attributes);
+    }
 }
