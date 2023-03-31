@@ -11,18 +11,10 @@ class Quote extends Model
 
     protected $fillable = [
         'total',
-        'state_id',
+        'status',
         'client_id',
         'pricetype_id'
     ];
-
-    /**
-     * Get the state Quote
-     */
-    public function state()
-    {
-        return $this->belongsTo(QuoteState::class);
-    }
 
     /**
      * Get the client of the Quote

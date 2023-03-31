@@ -13,6 +13,7 @@ use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
+use Filament\Pages\Actions\Action;
 
 use Filament\Tables;
 use App\Models\Quote;
@@ -57,10 +58,8 @@ class QuoteResource extends Resource
                     ->disabled()
                     ->displayFormat('d/m/Y H:i:s')
                     ->hiddenOn('create'),
-                Select::make('stateId')
+                TextInput::make('status')
                     ->label('Estado')
-                    ->options(QuoteState::all()->pluck('name', 'id'))
-                    ->relationship('state', 'name')
                     ->disabled()
                     ->hiddenOn('create'),
                 TextInput::make('total')
@@ -84,11 +83,8 @@ class QuoteResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('state_id')
-                    ->label('Estado')
-                    ->getStateUsing(function (Model $record) {
-                        return $record->state->name;
-                    }),
+                TextColumn::make('status')
+                    ->label('Estado'),
                 TextColumn::make('client_id')
                     ->label('Cliente')
                     ->searchable(query: function (Builder $query, string $search): Builder {
@@ -117,6 +113,16 @@ class QuoteResource extends Resource
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
+
+    public static function getActions(): array
+    {
+        return [
+            Action::make('delete')
+                ->action(fn () => $this->record->delete())
+                ->requiresConfirmation(),
+        ];
+    }
+
 
     public static function getRelations(): array
     {

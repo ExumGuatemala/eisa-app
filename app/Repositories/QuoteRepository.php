@@ -13,13 +13,24 @@ class QuoteRepository
         return Quote::all();
     }
 
+    public function find(int $id)
+    {
+        return Quote::find($id);
+    }
+
     public function get($id)
     {
         return Quote::where('id', $id)->get();
     }
 
-    public function updateTotal($pricetypeId, $productId)
+    public function updateById(int $id, array $attributes): bool
     {
-        return ProductsPriceTypes::where('product_id', $productId)->where('pricetype_id', $pricetypeId)->get()[0]['price'];
+        $obj = Quote::find($id);
+
+        foreach ($attributes as $key => $value) {
+            $obj->{$key} = $value;
+        }
+
+        return $obj->save();
     }
 }

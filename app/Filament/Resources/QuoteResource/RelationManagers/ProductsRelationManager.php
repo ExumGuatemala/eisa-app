@@ -15,6 +15,7 @@ use Filament\Tables\Actions\DetachAction;
 use Filament\Tables\Actions\EditAction;
 use App\Services\QuoteService;
 use App\Services\QuotesProductsService;
+use App\Enums\QuoteTypeEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -80,6 +81,9 @@ class ProductsRelationManager extends RelationManager
                         //Update all prices in pivot table only if its price is zero (that means it was recently added)
                         self::$quotesProductsService->updateAllPrices($livewire->ownerRecord->id, $livewire->ownerRecord->pricetype_id);
                         $livewire->emit('refresh');
+                    })
+                    ->disabled(function (RelationManager $livewire) {
+                        return QuoteTypeEnum::CREATED === self::$quoteService->getQuoteStatus($livewire->ownerRecord->id);
                     }),
 
             ])

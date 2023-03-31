@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Repositories\ProductsPriceTypesRepository;
 use App\Repositories\QuoteRepository;
 use App\Repositories\QuotesProductsRepository;
+use App\Enums\QuoteTypeEnum;
 
 class QuoteService
 {
@@ -35,5 +36,15 @@ class QuoteService
     public function getProductPriceTypePrice($clientId, $productId)
     {
         return $this->productsPriceTypesRepository->getProductPrice($clientId, $productId);
+    }
+
+    public function getQuoteStatus($quoteId)
+    {
+        return $this->quoteRepository->find($quoteId)->status;
+    }
+
+    public function changeStateToCreated($quoteId)
+    {
+        $this->quoteRepository->updateById($quoteId,['status' => QuoteTypeEnum::CREATED]);
     }
 }
