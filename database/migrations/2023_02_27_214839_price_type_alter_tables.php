@@ -20,8 +20,8 @@ return new class extends Migration
             $table->decimal('price', 9, 2)->default(0);
             $table->timestamps();
 
-            $table->foreign('product_id')->references('id')->on('products');
-            $table->foreign('pricetype_id')->references('id')->on('price_types');
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+            $table->foreign('pricetype_id')->references('id')->on('price_types')->onDelete('cascade');
 
         });
 
@@ -29,8 +29,9 @@ return new class extends Migration
 
         Schema::table('quotes_products_pricetypes', function (Blueprint $table) {
             $table->unsignedBigInteger('pricetype_id')->nullable()->after('product_id');
-
             $table->foreign('pricetype_id')->references('id')->on('products_pricetypes');
+
+            // $table->foreign('pricetype_id')->references('id')->on('products_pricetypes')->onDelete('cascade');
         });
 
     }
