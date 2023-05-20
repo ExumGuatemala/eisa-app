@@ -8,6 +8,7 @@ use App\Models\ProductsPriceTypes;
 
 class PriceTypeRepository
 {
+    
     public function all()
     {
         return Pricetype::all();

@@ -10,6 +10,8 @@ class EditPriceType extends EditRecord
 {
     protected static string $resource = PriceTypeResource::class;
 
+    
+
     protected function getActions(): array
     {
         return [

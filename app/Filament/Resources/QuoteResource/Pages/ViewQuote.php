@@ -23,6 +23,7 @@ class ViewQuote extends ViewRecord
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $data['total'] = self::$quoteService->updateTotal($data['id']);
+        // self::refreshForm();
         return $data;
     }
 
@@ -35,7 +36,9 @@ class ViewQuote extends ViewRecord
     {
         return [
             EditAction::make()
-                ->label('Cambiar Tipo de Precio'),
+                ->label('Cambiar Tipo de Precio')
+                ->hidden(QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($this->record->id) ),
+
             Action::make('Cambiar a Creada')
                 ->action(function () {
                     self::$quoteService->changeStateToCreated($this->record->id);
@@ -50,7 +53,8 @@ class ViewQuote extends ViewRecord
                 ->modalButton('Si!')
                 ->hidden(function () {
                     return QuoteTypeEnum::CREATED === self::$quoteService->getQuoteStatus($this->record->id);
-                }),
+                })
+                ->hidden(QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($this->record->id) ),
         ];
     }
 }
