@@ -119,7 +119,6 @@ class ProductsRelationManager extends RelationManager
                         } else {
                             return FALSE;
                         };
-                        // self::$quotesProductsService->updateAllPrices($livewire->ownerRecord->id, $livewire->ownerRecord->pricetype_id);
                         $livewire->emit('refresh');
                     }),
                     
@@ -137,7 +136,6 @@ class ProductsRelationManager extends RelationManager
                             } else {
                                 return false;
                             };
-                            // self::$quotesProductsService->updateAllPrices($livewire->ownerRecord->id, $livewire->ownerRecord->pricetype_id);
                             $livewire->emit('refresh');
                         }),
             ])

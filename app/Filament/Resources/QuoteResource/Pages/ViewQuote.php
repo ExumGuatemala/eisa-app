@@ -23,7 +23,6 @@ class ViewQuote extends ViewRecord
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $data['total'] = self::$quoteService->updateTotal($data['id']);
-        // self::refreshForm();
         return $data;
     }
 
@@ -46,6 +45,7 @@ class ViewQuote extends ViewRecord
                         'status',
                     ]);
                     $this->fillForm();
+                    redirect('admin/quotes/' . $this->record->id);
                 })
                 ->requiresConfirmation()
                 ->modalHeading('Finalizar de llenar y crear cotizacion?')
