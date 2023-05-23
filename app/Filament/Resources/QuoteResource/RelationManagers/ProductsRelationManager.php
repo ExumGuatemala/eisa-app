@@ -142,7 +142,7 @@ class ProductsRelationManager extends RelationManager
                         }),
             ])
             ->bulkActions([
-                Tables\Actions\DetachBulkAction::make(),
+               
             ]);
     }
 }
