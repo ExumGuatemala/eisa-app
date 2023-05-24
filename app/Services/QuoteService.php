@@ -47,4 +47,8 @@ class QuoteService
     {
         $this->quoteRepository->updateById($quoteId,['status' => QuoteTypeEnum::CREATED]);
     }
+
+    public function updateProductQuotePrices($priceTypeId,$productId, $newPrice){
+        $this->quoteRepository->updateProductPrices($priceTypeId,$productId, $newPrice);
+    }
 }

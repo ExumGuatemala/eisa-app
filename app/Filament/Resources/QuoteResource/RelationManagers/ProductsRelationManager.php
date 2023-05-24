@@ -26,6 +26,7 @@ class ProductsRelationManager extends RelationManager
     protected static $quotesProductsService;
 
     protected static string $relationship = 'products';
+
     protected static ?string $recordTitleAttribute = 'name';
 
     public function __construct() {
@@ -109,6 +110,8 @@ class ProductsRelationManager extends RelationManager
                     ->after(function (RelationManager $livewire) {
                         //Update all prices in pivot table only if its price is zero (that means it was recently added)
                         self::$quotesProductsService->updateAllPrices($livewire->ownerRecord->id, $livewire->ownerRecord->pricetype_id);
+                        echo $livewire->ownerRecord->id;
+                        // self::$quotesProductsService->updateProductQuotePrices($livewire->ownerRecord->pricetype_id, $livewire->ownerRecord->price);
                         $livewire->emit('refresh');
                     })
                 ->hidden(
