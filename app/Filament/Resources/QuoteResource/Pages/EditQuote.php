@@ -26,6 +26,7 @@ class EditQuote extends EditRecord
     protected function afterSave(): void
     {
         self::$quotesProductsService->updateAllPrices($this->record->id,$this->record->pricetype_id);
+        redirect()->intended('/admin/quotes/'.str($this->record->id).'?activeRelationManager=0');
     }
 
     protected function getActions(): array
