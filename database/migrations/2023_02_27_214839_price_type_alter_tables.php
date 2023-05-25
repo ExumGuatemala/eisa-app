@@ -20,8 +20,8 @@ return new class extends Migration
             $table->decimal('price', 9, 2)->default(0);
             $table->timestamps();
 
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
-            $table->foreign('pricetype_id')->references('id')->on('price_types')->onDelete('cascade');
+            $table->foreign('product_id')->references('id')->on('products');
+            $table->foreign('pricetype_id')->references('id')->on('price_types');
 
         });
 
