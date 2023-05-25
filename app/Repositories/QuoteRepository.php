@@ -44,14 +44,12 @@ class QuoteRepository
     }
 
     public function updateProductPrices($priceTypeId,$productId, $newPrice){
-        // dd($priceTypeId,$productId,$newPrice);
         $quotes = Quote::where('pricetype_id', $priceTypeId)
         ->where('status','En Progreso')
         ->get();
-        // dd($quotes);
         foreach ($quotes as $quote) {
             $this->quotesProductsRepository->updatesProductsPrices($quote->id, $newPrice, $productId);
         }
-        
+        return $quotes;
     }
 }

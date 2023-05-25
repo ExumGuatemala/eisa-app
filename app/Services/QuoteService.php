@@ -49,6 +49,10 @@ class QuoteService
     }
 
     public function updateProductQuotePrices($priceTypeId,$productId, $newPrice){
-        $this->quoteRepository->updateProductPrices($priceTypeId,$productId, $newPrice);
+        $quotes = $this->quoteRepository->updateProductPrices($priceTypeId,$productId, $newPrice);
+        $updatedTotal = 0;
+        foreach($quotes as $quote) {
+            $updatedTotal = self::updateTotal($quote['id']);
+        }
     }
 }
