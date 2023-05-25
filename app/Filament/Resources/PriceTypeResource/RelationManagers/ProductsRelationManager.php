@@ -23,13 +23,11 @@ class ProductsRelationManager extends RelationManager
     protected static ?string $model = QuotesProducts::class;
     protected static string $relationship = 'products';
     protected static ?string $recordTitleAttribute = 'name';
-    // protected static ?string $modelLabel = 'productos';
     protected static $quoteService;
     protected static $quotesProductsService;
     protected $currentProduct;
      
     public function __construct() {
-        // $currentProduct = new QuotesProducts();
         static::$quoteService = new QuoteService();
         static::$quotesProductsService = new QuotesProductsService();
     }
@@ -42,8 +40,6 @@ class ProductsRelationManager extends RelationManager
                     ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
                     ->required(),
             ]);
-        // $this->$currentProduct = $form->getCurrentRecord();
-
     }
 
     public static function table(Table $table): Table
@@ -63,15 +59,8 @@ class ProductsRelationManager extends RelationManager
             ])
             ->actions([ 
                 Tables\Actions\EditAction::make()
-                // ->after(function (array $data) {
                 ->after(function (RelationManager $livewire) {
-                    // dd($livewire->mountedTableActionData);
-
-                    // $itemModel = $table->getCurrentRecord();
-                    // dd($itemModel);
-                    // $product = $form->getModel();
                     self::$quoteService->updateProductQuotePrices($livewire->mountedTableActionData['pricetype_id'],$livewire->mountedTableActionData['id'], $livewire->mountedTableActionData['price']);
-                    // $livewire->emit('refresh');
                 }),
             ])
             ->bulkActions([
