@@ -9,10 +9,6 @@ use Filament\Resources\Pages\ViewRecord;
 class ViewPriceType extends ViewRecord
 {
     protected static string $resource = PriceTypeResource::class;
-    
-    // public function __construct() {
-    //     static::$quotesProductsService = new QuotesProductsService;
-    // }
 
     protected function getActions(): array
     {
