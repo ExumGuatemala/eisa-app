@@ -29,8 +29,9 @@ return new class extends Migration
 
         Schema::table('quotes_products_pricetypes', function (Blueprint $table) {
             $table->unsignedBigInteger('pricetype_id')->nullable()->after('product_id');
-
             $table->foreign('pricetype_id')->references('id')->on('products_pricetypes');
+
+            // $table->foreign('pricetype_id')->references('id')->on('products_pricetypes')->onDelete('cascade');
         });
 
     }
