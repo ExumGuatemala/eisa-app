@@ -26,6 +26,7 @@ class ProductsRelationManager extends RelationManager
     protected static $quotesProductsService;
 
     protected static string $relationship = 'products';
+
     protected static ?string $recordTitleAttribute = 'name';
 
     public function __construct() {
@@ -93,7 +94,6 @@ class ProductsRelationManager extends RelationManager
                             } else {
                                 return FALSE;
                             };
-                            // self::$quotesProductsService->updateAllPrices($livewire->ownerRecord->id, $livewire->ownerRecord->pricetype_id);
                             $livewire->emit('refresh');
                         }),
 
