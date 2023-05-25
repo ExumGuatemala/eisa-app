@@ -35,7 +35,9 @@ class ViewQuote extends ViewRecord
     {
         return [
             EditAction::make()
-                ->label('Cambiar Tipo de Precio'),
+                ->label('Cambiar Tipo de Precio')
+                ->hidden(QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($this->record->id) ),
+
             Action::make('Cambiar a Creada')
                 ->action(function () {
                     self::$quoteService->changeStateToCreated($this->record->id);
@@ -43,6 +45,7 @@ class ViewQuote extends ViewRecord
                         'status',
                     ]);
                     $this->fillForm();
+                    redirect('admin/quotes/' . $this->record->id);
                 })
                 ->requiresConfirmation()
                 ->modalHeading('Finalizar de llenar y crear cotizacion?')
@@ -50,7 +53,8 @@ class ViewQuote extends ViewRecord
                 ->modalButton('Si!')
                 ->hidden(function () {
                     return QuoteTypeEnum::CREATED === self::$quoteService->getQuoteStatus($this->record->id);
-                }),
+                })
+                ->hidden(QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($this->record->id) ),
         ];
     }
 }
