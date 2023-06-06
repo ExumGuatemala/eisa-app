@@ -4,6 +4,7 @@ namespace App\Filament\Resources\QuoteResource\Pages;
 
 use App\Filament\Resources\QuoteResource;
 use App\Services\QuoteService;
+use App\Services\ModelHasRoleService;
 use App\Enums\QuoteTypeEnum;
 use Filament\Pages\Actions;
 use Filament\Pages\Actions\Action;
@@ -15,14 +16,18 @@ class ViewQuote extends ViewRecord
     protected static string $resource = QuoteResource::class;
     protected $listeners = ['refresh'=>'refreshForm'];
     protected static $quoteService;
+    protected static $roleService;
+
 
     public function __construct() {
         static::$quoteService = new QuoteService;
+        static::$roleService = new ModelHasRoleService;
     }
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $data['total'] = self::$quoteService->updateTotal($data['id']);
+     
         return $data;
     }
 
@@ -35,7 +40,8 @@ class ViewQuote extends ViewRecord
     {
         return [
             EditAction::make()
-                ->label('Cambiar Tipo de Precio'),
+                ->label('Cambiar Tipo de Precio')
+                ->hidden(self::$roleService->hasAdminPermissions(auth()->user()->id) == false),
             Action::make('Cambiar a Creada')
                 ->action(function () {
                     self::$quoteService->changeStateToCreated($this->record->id);
