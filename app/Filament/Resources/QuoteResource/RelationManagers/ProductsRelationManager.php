@@ -26,6 +26,7 @@ class ProductsRelationManager extends RelationManager
     protected static $quotesProductsService;
 
     protected static string $relationship = 'products';
+
     protected static ?string $recordTitleAttribute = 'name';
 
     public function __construct() {
@@ -84,7 +85,17 @@ class ProductsRelationManager extends RelationManager
                     })
                     ->disabled(function (RelationManager $livewire) {
                         return QuoteTypeEnum::CREATED === self::$quoteService->getQuoteStatus($livewire->ownerRecord->id);
-                    }),
+                    })
+                    ->hidden(
+                        function (RelationManager $livewire) {
+                            //Update all prices in pivot table only if its price is zero (that means it was recently added)
+                            if (QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($livewire->ownerRecord->id)){
+                                return TRUE;
+                            } else {
+                                return FALSE;
+                            };
+                            $livewire->emit('refresh');
+                        }),
 
             ])
             ->actions([
@@ -99,15 +110,37 @@ class ProductsRelationManager extends RelationManager
                         //Update all prices in pivot table only if its price is zero (that means it was recently added)
                         self::$quotesProductsService->updateAllPrices($livewire->ownerRecord->id, $livewire->ownerRecord->pricetype_id);
                         $livewire->emit('refresh');
+                    })
+                ->hidden(
+                    function (RelationManager $livewire) {
+                        //Update all prices in pivot table only if its price is zero (that means it was recently added)
+                        if (QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($livewire->ownerRecord->id)){
+                            return TRUE;
+                        } else {
+                            return FALSE;
+                        };
+                        $livewire->emit('refresh');
                     }),
+                    
+                
                 DetachAction::make()
                     ->after(function (RelationManager $livewire) {
                         self::$quotesProductsService->updateAllPrices($livewire->ownerRecord->id, $livewire->ownerRecord->pricetype_id);
                         $livewire->emit('refresh');
-                    }),
+                    })
+                    ->hidden(
+                        function (RelationManager $livewire) {
+                            //Update all prices in pivot table only if its price is zero (that means it was recently added)
+                            if (QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($livewire->ownerRecord->id)){
+                                return True;
+                            } else {
+                                return false;
+                            };
+                            $livewire->emit('refresh');
+                        }),
             ])
             ->bulkActions([
-                Tables\Actions\DetachBulkAction::make(),
+               
             ]);
     }
 }

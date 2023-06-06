@@ -5,9 +5,18 @@ namespace App\Repositories;
 use App\Models\Quote;
 use App\Models\Client;
 use App\Models\ProductsPriceTypes;
+use App\Repositories\QuotesProductsRepository;
 
 class QuoteRepository
 {
+    protected $quotesProductsRepository;
+    public function __construct()
+    {
+        $this->quotesProductsRepository = new QuotesProductsRepository;
+        // $this->productsPriceTypesRepository = new ProductsPriceTypesRepository;
+        // $this->quoteRepository = new QuoteRepository;
+        // $this->quotesProductsRepository = new QuotesProductsRepository;
+    }
     public function all()
     {
         return Quote::all();
@@ -32,5 +41,15 @@ class QuoteRepository
         }
 
         return $obj->save();
+    }
+
+    public function updateProductPrices($priceTypeId,$productId, $newPrice){
+        $quotes = Quote::where('pricetype_id', $priceTypeId)
+        ->where('status','En Progreso')
+        ->get();
+        foreach ($quotes as $quote) {
+            $this->quotesProductsRepository->updatesProductsPrices($quote->id, $newPrice, $productId);
+        }
+        return $quotes;
     }
 }
