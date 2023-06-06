@@ -41,7 +41,7 @@ class ViewQuote extends ViewRecord
         return [
             EditAction::make()
                 ->label('Cambiar Tipo de Precio')
-                ->hidden(self::$roleService->hasAdminPermissions(auth()->user()->id) == false),
+                ->hidden(self::$roleService->hasAdminPermissions(auth()->user()->id) == false && QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($this->record->id)),
             Action::make('Cambiar a Creada')
                 ->action(function () {
                     self::$quoteService->changeStateToCreated($this->record->id);
