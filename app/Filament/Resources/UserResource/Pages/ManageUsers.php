@@ -27,7 +27,6 @@ class ManageUsers extends ManageRecords
                 return $data;
             })
             ->after(function () {
-                
                 self::$modelRoleService->saveModelRoles(2, $this->cachedForms['mountedActionForm']->model->id);
             }), 
         ];
