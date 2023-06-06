@@ -56,11 +56,7 @@ class QuoteResource extends Resource
                     TextInput::make('key')
                     ->label("Código")
                     ->disabled()
-                    ->afterStateHydrated(function (TextInput $component, $state) {
-                        if(!$state){
-                            $component->state(strtoupper(substr(bin2hex(random_bytes(ceil(8 / 2))), 0, 8)));
-                        }
-                    }),
+                    ->default('0'),
                 DateTimePicker::make('created_at')
                     ->label('Fecha de Creación')
                     ->disabled()
