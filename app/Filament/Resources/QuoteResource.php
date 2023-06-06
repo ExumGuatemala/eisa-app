@@ -56,7 +56,7 @@ class QuoteResource extends Resource
                     TextInput::make('key')
                     ->label("Código")
                     ->disabled()
-                    ->default('0'),
+                    ->default('Asignado cuando se cree'),
                 DateTimePicker::make('created_at')
                     ->label('Fecha de Creación')
                     ->disabled()
