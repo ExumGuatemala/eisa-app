@@ -52,4 +52,7 @@ class QuoteRepository
         }
         return $quotes;
     }
+    public function countByKey($key){
+        return Quote::where('key', $key)->count();
+    }
 }

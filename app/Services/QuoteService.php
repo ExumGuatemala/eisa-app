@@ -55,4 +55,17 @@ class QuoteService
             $updatedTotal = self::updateTotal($quote['id']);
         }
     }
+    public function setAKey($orderKey){
+        $result = $orderKey;
+        $is_new = false;
+        while (!$is_new){
+            if ($this->quoteRepository->countByKey($result) == 0)
+            {
+                $is_new = true;
+            } else {
+                $result = strtoupper(substr(bin2hex(random_bytes(ceil(8 / 2))), 0, 8));
+            }
+        }
+        return $result;
+    }
 }
