@@ -9,6 +9,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Actions\AttachAction;
 use Filament\Tables\Actions\DetachAction;
@@ -58,11 +59,21 @@ class ProductsRelationManager extends RelationManager
                     ->label("Precio"),
                 TextColumn::make('quantity')
                     ->label("Cantidad"),
+                TextColumn::make('description')
+                    ->label('descripcion'),
+                TextColumn::make('height')
+                    ->label("Alto (m)"),
+                TextColumn::make('width')
+                    ->label("Ancho (m)"),
                 TextColumn::make('subtotal')
                     ->money('gtq', true)
                     ->label("SubTotal")
                     ->getStateUsing(function (Model $record) {
-                        return $record->quantity * $record->price;
+                        if ($record->height == 0 || $record->width == 0) {
+                            return $record->quantity * $record->price;
+                        } else {
+                            return $record->quantity * $record->price * $record->height * $record->width;
+                        }
                     }),
             ])
             ->filters([
@@ -76,6 +87,12 @@ class ProductsRelationManager extends RelationManager
                             ->required()
                             ->label('Cantidad')
                             ->default(1),
+                        Textarea::make('description')
+                            ->label('descripcion'),
+                        TextInput::make('height')
+                            ->label("Alto (m)"),
+                        TextInput::make('width')
+                            ->label("Ancho (m)"),
                     ])
                     ->preloadRecordSelect()
                     ->after(function (RelationManager $livewire) {
@@ -105,6 +122,10 @@ class ProductsRelationManager extends RelationManager
                             ->required()
                             ->label('Cantidad')
                             ->default(1),
+                        TextInput::make('height')
+                            ->label("Alto (m)"),
+                        TextInput::make('width')
+                            ->label("Ancho (m)"),
                     ])
                     ->after(function (RelationManager $livewire) {
                         //Update all prices in pivot table only if its price is zero (that means it was recently added)
