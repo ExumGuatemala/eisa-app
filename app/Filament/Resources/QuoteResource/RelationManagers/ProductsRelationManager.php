@@ -45,6 +45,12 @@ class ProductsRelationManager extends RelationManager
 
             ]);
     }
+    
+    protected function isTablePaginationEnabled(): bool 
+    {
+        return false;
+    } 
+ 
 
     public static function table(Table $table): Table
     {

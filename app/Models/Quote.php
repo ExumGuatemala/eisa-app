@@ -13,7 +13,8 @@ class Quote extends Model
         'total',
         'status',
         'client_id',
-        'pricetype_id'
+        'pricetype_id',
+        'key'
     ];
 
     /**
