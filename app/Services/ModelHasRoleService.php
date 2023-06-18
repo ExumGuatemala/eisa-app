@@ -19,13 +19,6 @@ class ModelHasRoleService
         $priceTypes = $this->modelHasRoleRepository->save($user_id, "App\Models\User", $role_id);
     }
 
-    public function hasAdminPermissions($userId){
-        $role = $this->modelHasRoleRepository->getRoleByUserId($userId);
-        if ($role->role_id == 1) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+    
 
 }

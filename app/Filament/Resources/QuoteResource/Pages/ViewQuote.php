@@ -7,6 +7,7 @@ use App\Services\QuoteService;
 use App\Services\ModelHasRoleService;
 use App\Enums\QuoteTypeEnum;
 use Filament\Pages\Actions;
+use App\Policies\ChangeProductPolicy;
 use Filament\Pages\Actions\Action;
 use Filament\Pages\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
@@ -16,12 +17,12 @@ class ViewQuote extends ViewRecord
     protected static string $resource = QuoteResource::class;
     protected $listeners = ['refresh'=>'refreshForm'];
     protected static $quoteService;
-    protected static $roleService;
+    protected static $userPolicy;
 
 
     public function __construct() {
         static::$quoteService = new QuoteService;
-        static::$roleService = new ModelHasRoleService;
+        static::$userPolicy = new ChangeProductPolicy;
     }
 
     protected function mutateFormDataBeforeFill(array $data): array
@@ -41,7 +42,7 @@ class ViewQuote extends ViewRecord
         return [
             EditAction::make()
                 ->label('Cambiar Tipo de Precio')
-                ->hidden(self::$roleService->hasAdminPermissions(auth()->user()->id) == false && QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($this->record->id)),
+                ->hidden(self::$userPolicy->showChangePriceTypeProduct(auth()->user()) && QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($this->record->id)),
             Action::make('Cambiar a Creada')
                 ->action(function () {
                     self::$quoteService->changeStateToCreated($this->record->id);
