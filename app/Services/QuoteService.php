@@ -47,4 +47,12 @@ class QuoteService
     {
         $this->quoteRepository->updateById($quoteId,['status' => QuoteTypeEnum::CREATED]);
     }
+
+    public function updateProductQuotePrices($priceTypeId,$productId, $newPrice){
+        $quotes = $this->quoteRepository->updateProductPrices($priceTypeId,$productId, $newPrice);
+        $updatedTotal = 0;
+        foreach($quotes as $quote) {
+            $updatedTotal = self::updateTotal($quote['id']);
+        }
+    }
 }

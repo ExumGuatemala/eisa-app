@@ -50,6 +50,7 @@ class ViewQuote extends ViewRecord
                         'status',
                     ]);
                     $this->fillForm();
+                    redirect('admin/quotes/' . $this->record->id);
                 })
                 ->requiresConfirmation()
                 ->modalHeading('Finalizar de llenar y crear cotizacion?')
@@ -57,7 +58,8 @@ class ViewQuote extends ViewRecord
                 ->modalButton('Si!')
                 ->hidden(function () {
                     return QuoteTypeEnum::CREATED === self::$quoteService->getQuoteStatus($this->record->id);
-                }),
+                })
+                ->hidden(QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($this->record->id) ),
         ];
     }
 }
