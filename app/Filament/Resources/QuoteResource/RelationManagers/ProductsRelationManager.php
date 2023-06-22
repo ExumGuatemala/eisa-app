@@ -77,6 +77,8 @@ class ProductsRelationManager extends RelationManager
             ])
             ->headerActions([
                 AttachAction::make()
+                    ->slideOver()
+                    ->modalWidth('4xl')
                     ->form(fn (AttachAction $action): array => [
                         $action->getRecordSelect(),
                         TextInput::make('quantity')
@@ -129,6 +131,7 @@ class ProductsRelationManager extends RelationManager
             ])
             ->actions([
                 EditAction::make()
+                    ->slideOver()
                     ->form(fn (EditAction $action): array => [
                         TextInput::make('quantity')
                             ->required()
