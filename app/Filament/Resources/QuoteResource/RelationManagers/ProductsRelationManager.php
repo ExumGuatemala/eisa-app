@@ -2,12 +2,9 @@
 
 namespace App\Filament\Resources\QuoteResource\RelationManagers;
 
-
-use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
-use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -18,8 +15,6 @@ use App\Services\QuoteService;
 use App\Services\QuotesProductsService;
 use App\Enums\QuoteTypeEnum;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ProductsRelationManager extends RelationManager
 {
@@ -29,6 +24,7 @@ class ProductsRelationManager extends RelationManager
     protected static string $relationship = 'products';
 
     protected static ?string $recordTitleAttribute = 'name';
+    protected bool $allowsDuplicates = true;
 
     public function __construct() {
         static::$quoteService = new QuoteService();
@@ -42,7 +38,6 @@ class ProductsRelationManager extends RelationManager
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-
             ]);
     }
     
@@ -56,8 +51,6 @@ class ProductsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                TextColumn::make('id')
-                    ->label("ID"),
                 TextColumn::make('name')
                     ->label("Nombre"),
                 TextColumn::make('price')
@@ -65,21 +58,18 @@ class ProductsRelationManager extends RelationManager
                     ->label("Precio"),
                 TextColumn::make('quantity')
                     ->label("Cantidad"),
-                TextColumn::make('description')
-                    ->label('descripcion'),
                 TextColumn::make('height')
                     ->label("Alto (m)"),
                 TextColumn::make('width')
                     ->label("Ancho (m)"),
+                TextColumn::make('description')
+                    ->label("Descripción")
+                    ->wrap(),
                 TextColumn::make('subtotal')
                     ->money('gtq', true)
                     ->label("SubTotal")
                     ->getStateUsing(function (Model $record) {
-                        if ($record->height == 0 || $record->width == 0) {
                             return $record->quantity * $record->price;
-                        } else {
-                            return $record->quantity * $record->price * $record->height * $record->width;
-                        }
                     }),
             ])
             ->filters([
@@ -94,11 +84,28 @@ class ProductsRelationManager extends RelationManager
                             ->label('Cantidad')
                             ->default(1),
                         Textarea::make('description')
-                            ->label('descripcion'),
+                            ->label('Descripción'),
                         TextInput::make('height')
-                            ->label("Alto (m)"),
+                            ->label("Alto (m)")
+                            ->reactive()
+                            ->default(1)
+                            ->afterStateUpdated(function (callable $set, $get) {
+                                $width = $get('width') == '' ? 0 : $get('width');
+                                $height = $get('height') == '' ? 0 : $get('height');
+                                $set('totalm', round($width * $height, 2));
+                            }),
                         TextInput::make('width')
-                            ->label("Ancho (m)"),
+                            ->label("Ancho (m)")
+                            ->reactive()
+                            ->default(1)
+                            ->afterStateUpdated(function (callable $set, $get) {
+                                $width = $get('width') == '' ? 0 : $get('width');
+                                $height = $get('height') == '' ? 0 : $get('height');
+                                $set('totalm', round($width * $height, 2));
+                            }),
+                        TextInput::make('totalm')
+                            ->label("Total(m2)")
+                            ->disabled(),
                     ])
                     ->preloadRecordSelect()
                     ->after(function (RelationManager $livewire) {
@@ -111,7 +118,6 @@ class ProductsRelationManager extends RelationManager
                     })
                     ->hidden(
                         function (RelationManager $livewire) {
-                            //Update all prices in pivot table only if its price is zero (that means it was recently added)
                             if (QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($livewire->ownerRecord->id)){
                                 return TRUE;
                             } else {
@@ -126,28 +132,44 @@ class ProductsRelationManager extends RelationManager
                     ->form(fn (EditAction $action): array => [
                         TextInput::make('quantity')
                             ->required()
-                            ->label('Cantidad')
-                            ->default(1),
+                            ->label('Cantidad'),
+                        Textarea::make('description')
+                            ->label('Descripción'),
                         TextInput::make('height')
-                            ->label("Alto (m)"),
+                            ->label("Alto (m)")
+                            ->reactive()
+                            ->afterStateUpdated(function (callable $set, $get) {
+                                $width = $get('width') == '' ? 0 : $get('width');
+                                $height = $get('height') == '' ? 0 : $get('height');
+                                $set('totalm', round($width * $height, 2));
+                            }),
                         TextInput::make('width')
-                            ->label("Ancho (m)"),
+                            ->label("Ancho (m)")
+                            ->reactive()
+                            ->afterStateUpdated(function (callable $set, $get) {
+                                $width = $get('width') == '' ? 0 : $get('width');
+                                $height = $get('height') == '' ? 0 : $get('height');
+                                $set('totalm', round($width * $height, 2));
+                            }),
+                        TextInput::make('totalm')
+                            ->label("Total(m2)")
+                            ->disabled(),
                     ])
                     ->after(function (RelationManager $livewire) {
                         //Update all prices in pivot table only if its price is zero (that means it was recently added)
                         self::$quotesProductsService->updateAllPrices($livewire->ownerRecord->id, $livewire->ownerRecord->pricetype_id);
                         $livewire->emit('refresh');
                     })
-                ->hidden(
-                    function (RelationManager $livewire) {
-                        //Update all prices in pivot table only if its price is zero (that means it was recently added)
-                        if (QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($livewire->ownerRecord->id)){
-                            return TRUE;
-                        } else {
-                            return FALSE;
-                        };
-                        $livewire->emit('refresh');
-                    }),
+                    ->hidden(
+                        function (RelationManager $livewire) {
+                            //Update all prices in pivot table only if its price is zero (that means it was recently added)
+                            if (QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($livewire->ownerRecord->id)){
+                                return TRUE;
+                            } else {
+                                return FALSE;
+                            };
+                            $livewire->emit('refresh');
+                        }),
                     
                 
                 DetachAction::make()
