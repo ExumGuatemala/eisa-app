@@ -5,15 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ModelHasRole extends Model
+class WorkOrder extends Model
 {
     use HasFactory;
-    protected $table = 'model_has_roles';
-    public $timestamps = false;
     protected $fillable = [
-        'role_id',
-        'model_type',
-        'model_id'
+        'start_date',
+        'deadline',
+        'client_name',
+        'order_key',
+        'description',
     ];
-
 }

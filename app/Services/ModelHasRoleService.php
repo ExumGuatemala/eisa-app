@@ -18,7 +18,4 @@ class ModelHasRoleService
     {
         $priceTypes = $this->modelHasRoleRepository->save($user_id, "App\Models\User", $role_id);
     }
-
-    
-
 }
