@@ -111,12 +111,13 @@ class ViewQuote extends ViewRecord
                 ]) 
                 ->startOnStep(1)
                 ->action(function ( array $data) {
+                    dd($this->record->products);
                     // self::$workOrderService->saveWorkOrder(Client::find($this->record->client_id)->name, $data["description"], $this->record->key, $data["start_date"], $data["deadline"]);
-                    self::$workOrderService->saveWorkOrder(Client::find($this->record->client_id)->name, $data["description"], "example key", $data["start_date"], $data["deadline"]);
-                    Notification::make() 
-                        ->title('Creada orden de trabajo')
-                        ->success()
-                        ->send(); 
+                    // self::$workOrderService->saveWorkOrder(Client::find($this->record->client_id)->name, $data["description"], "example key", $data["start_date"], $data["deadline"]);
+                    // Notification::make() 
+                    //     ->title('Creada orden de trabajo')
+                    //     ->success()
+                    //     ->send(); 
                 })
                 // ->hidden(QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($this->record->id) || self::$workOrderService->countByKey("example") > 0),
                 ->hidden(QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($this->record->id)),
