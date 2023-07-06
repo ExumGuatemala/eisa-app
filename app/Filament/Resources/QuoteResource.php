@@ -53,6 +53,10 @@ class QuoteResource extends Resource
                         $client = Client::find(($get('clientId')));
                         $set('pricetypeId', $client->pricetype_id);
                     }),
+                    TextInput::make('key')
+                    ->label("Código")
+                    ->disabled()
+                    ->default('Asignado cuando se cree'),
                 DateTimePicker::make('created_at')
                     ->label('Fecha de Creación')
                     ->disabled()
@@ -83,6 +87,8 @@ class QuoteResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('key')
+                    ->label('Codigo'),
                 TextColumn::make('status')
                     ->label('Estado'),
                 TextColumn::make('client_id')
@@ -95,7 +101,7 @@ class QuoteResource extends Resource
                     })
                     ->getStateUsing(function (Model $record) {
                         return $record->client->name;
-                    }),
+                    }),    
                 TextColumn::make('total')
                     ->money('gtq', true)
                     ->default(0),
