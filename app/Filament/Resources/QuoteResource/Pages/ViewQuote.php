@@ -102,7 +102,7 @@ class ViewQuote extends ViewRecord
                                     $this->record->products;
                                     $products = "";
                                     foreach ($this->record->products as $value) {
-                                        $products = $products . $value['name'] . "\n";
+                                        $products = $products . $value['name'] . " con una altura de " . $value['height'] . "Y un ancho de " . $value['width'] . "\n";
                                     }
                                     return $products;
                                 })
@@ -113,14 +113,13 @@ class ViewQuote extends ViewRecord
                 ->action(function ( array $data) {
                     dd($this->record->products);
                     // self::$workOrderService->saveWorkOrder(Client::find($this->record->client_id)->name, $data["description"], $this->record->key, $data["start_date"], $data["deadline"]);
-                    // self::$workOrderService->saveWorkOrder(Client::find($this->record->client_id)->name, $data["description"], "example key", $data["start_date"], $data["deadline"]);
                     // Notification::make() 
                     //     ->title('Creada orden de trabajo')
                     //     ->success()
                     //     ->send(); 
                 })
-                // ->hidden(QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($this->record->id) || self::$workOrderService->countByKey("example") > 0),
-                ->hidden(QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($this->record->id)),
+                // ->hidden(QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($this->record->id) || self::$workOrderService->countByKey($this->record->key) > 0),
+                // ->hidden(QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($this->record->id)),
         ];
     }
 }

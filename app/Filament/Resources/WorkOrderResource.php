@@ -99,7 +99,7 @@ class WorkOrderResource extends Resource
         return [
             'index' => Pages\ListWorkOrders::route('/'),
             'create' => Pages\CreateWorkOrder::route('/create'),
-            'edit' => Pages\EditWorkOrder::route('/{record}/edit'),
+            'view' => Pages\ViewWorkOrder::route('/{record}'),
         ];
     }    
 }

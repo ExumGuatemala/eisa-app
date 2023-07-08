@@ -4,17 +4,20 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Tables\Columns\TextColumn;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Tables\Columns\TextColumn;
+
+
 
 class UserResource extends Resource
 {
@@ -44,7 +47,7 @@ class UserResource extends Resource
                 DateTimePicker::make('email_verified_at')
                 ->label("Fecha de Verificación de Cuenta"),
                 TextInput::make('password')
-                    ->password()
+                    // ->password()
                     ->required()
                     ->maxLength(255)
                     ->label("Contraseña"),
@@ -78,11 +81,20 @@ class UserResource extends Resource
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
-
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageUsers::route('/'),
+            'index' => Pages\ListUsers::route('/'),
+            'create' => Pages\CreateUser::route('/create'),
+            'edit' => Pages\EditUser::route('/{record}/edit'),
+        ];
+    }
+    
+    public static function getRelations(): array
+    {
+        return [
+            RelationManagers\RoleRelationManager::class,
+            // RelationManagers\PaymentsRelationManager::class,
         ];
     }
 }
