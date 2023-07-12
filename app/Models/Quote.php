@@ -13,7 +13,8 @@ class Quote extends Model
         'total',
         'status',
         'client_id',
-        'pricetype_id'
+        'pricetype_id',
+        'key'
     ];
 
     /**
@@ -37,6 +38,6 @@ class Quote extends Model
      */
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'quotes_products', 'quote_id', 'product_id')->withPivot('quantity');
+        return $this->belongsToMany(Product::class, 'quotes_products', 'quote_id', 'product_id')->withPivot('quantity', 'description', 'height', 'width', 'totalm');
     }
 }
