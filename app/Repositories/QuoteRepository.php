@@ -3,19 +3,15 @@
 namespace App\Repositories;
 
 use App\Models\Quote;
-use App\Models\Client;
-use App\Models\ProductsPriceTypes;
 use App\Repositories\QuotesProductsRepository;
 
 class QuoteRepository
 {
     protected $quotesProductsRepository;
+
     public function __construct()
     {
         $this->quotesProductsRepository = new QuotesProductsRepository;
-        // $this->productsPriceTypesRepository = new ProductsPriceTypesRepository;
-        // $this->quoteRepository = new QuoteRepository;
-        // $this->quotesProductsRepository = new QuotesProductsRepository;
     }
     public function all()
     {
