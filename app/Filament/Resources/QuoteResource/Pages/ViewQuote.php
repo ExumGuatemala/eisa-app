@@ -117,8 +117,8 @@ class ViewQuote extends ViewRecord
                         ->success()
                         ->send(); 
                 })
-                // ->hidden(QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($this->record->id) || self::$workOrderService->countByKey("example") > 0),
-                ->hidden(QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($this->record->id)),
+                ->hidden(QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($this->record->id) || self::$workOrderService->countByKey($this->record->key) > 0),
+                //->hidden(QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($this->record->id)),
         ];
     }
 }
