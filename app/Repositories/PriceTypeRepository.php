@@ -13,4 +13,6 @@ class PriceTypeRepository
     {
         return Pricetype::all();
     }
+
+    
 }

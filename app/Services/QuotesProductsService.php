@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\QuotesProducts;
 
+use App\Models\ProductsPriceTypes;
 use App\Repositories\ProductsPriceTypesRepository;
 use App\Services\QuoteService;
 
@@ -14,7 +15,7 @@ class QuotesProductsService
 
     public function __construct()
     {
-        $this->productsPriceTypesRepository = new ProductsPriceTypesRepository;
+        $this->productsPriceTypesRepository = new ProductsPriceTypesRepository(new ProductsPriceTypes);
         $this->quoteService = new QuoteService;
     }
 
@@ -22,7 +23,7 @@ class QuotesProductsService
     {
         $quotesproducts = QuotesProducts::all();
         foreach($quotesproducts as $qp){
-            $qp->price = $qp->height * $qp->width * $this->productsPriceTypesRepository->getProductPrice($pricetypeId, $qp->product_id);
+            $qp->price = round($qp->height * $qp->width, 2) * $this->productsPriceTypesRepository->getProductPrice($pricetypeId, $qp->product_id);
             $qp->save();
         }
         $this->quoteService->updateTotal($quoteId);

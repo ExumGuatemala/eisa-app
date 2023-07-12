@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\ProductsPriceTypes;
 use App\Repositories\ProductsPriceTypesRepository;
 use App\Repositories\QuoteRepository;
 use App\Repositories\QuotesProductsRepository;
@@ -15,7 +16,7 @@ class QuoteService
 
     public function __construct()
     {
-        $this->productsPriceTypesRepository = new ProductsPriceTypesRepository;
+        $this->productsPriceTypesRepository = new ProductsPriceTypesRepository(new ProductsPriceTypes);
         $this->quoteRepository = new QuoteRepository;
         $this->quotesProductsRepository = new QuotesProductsRepository;
     }
