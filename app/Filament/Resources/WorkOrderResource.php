@@ -22,7 +22,7 @@ class WorkOrderResource extends Resource
 {
     protected static ?string $model = WorkOrder::class;
 
-    protected static ?string $navigationGroup = 'Administración';
+    protected static ?string $navigationGroup = 'Operaciones';
     protected static ?string $navigationIcon = 'heroicon-o-clipboard';
 
     protected static ?string $modelLabel = 'Orden de trabajo';
