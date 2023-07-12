@@ -83,7 +83,7 @@ class ViewQuote extends ViewRecord
                                 ->label('Fecha de inicio.')
                         ]),
                     Step::make('deadline')
-                        ->label('Ingrese fecha de entreda')
+                        ->label('Ingrese fecha de entrega')
                         ->description('Fecha de entreda para la orden de trabajo')
                         ->schema([
                             DatePicker::make('deadline')
@@ -111,8 +111,8 @@ class ViewQuote extends ViewRecord
                 ]) 
                 ->startOnStep(1)
                 ->action(function ( array $data) {
-                    // self::$workOrderService->saveWorkOrder(Client::find($this->record->client_id)->name, $data["description"], $this->record->key, $data["start_date"], $data["deadline"]);
-                    self::$workOrderService->saveWorkOrder(Client::find($this->record->client_id)->name, $data["description"], "example key", $data["start_date"], $data["deadline"]);
+                    self::$workOrderService->saveWorkOrder(Client::find($this->record->client_id)->name, $data["description"], $this->record->key, $data["start_date"], $data["deadline"]);
+                    //self::$workOrderService->saveWorkOrder(Client::find($this->record->client_id)->name, $data["description"], "example key", $data["start_date"], $data["deadline"]);
                     Notification::make() 
                         ->title('Creada orden de trabajo')
                         ->success()
