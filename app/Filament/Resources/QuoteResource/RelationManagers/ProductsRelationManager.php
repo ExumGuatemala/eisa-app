@@ -72,7 +72,10 @@ class ProductsRelationManager extends RelationManager
                 TextColumn::make('height')
                     ->label("Alto (m)"),
                 TextColumn::make('totalm')
-                    ->label("Total (m)"),
+                    ->label("Total (m)")
+                    ->getStateUsing(function (Model $record) {
+                        return $record->quantity * $record->totalm;
+                    }),
                 TextColumn::make('price')
                     ->money('gtq', true)
                     ->label("Precio")
