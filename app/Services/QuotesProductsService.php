@@ -23,7 +23,7 @@ class QuotesProductsService
     {
         $quotesproducts = QuotesProducts::all();
         foreach($quotesproducts as $qp){
-            $qp->price = round($qp->height * $qp->width, 2) * $this->productsPriceTypesRepository->getProductPrice($pricetypeId, $qp->product_id);
+            $qp->price = ($qp->totalm != 0 ? $qp->totalm : $qp->quantity) * $this->productsPriceTypesRepository->getProductPrice($pricetypeId, $qp->product_id);
             $qp->save();
         }
         $this->quoteService->updateTotal($quoteId);
