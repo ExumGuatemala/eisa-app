@@ -187,53 +187,75 @@ class ProductsRelationManager extends RelationManager
             ])
             ->actions([
                 EditAction::make()
+                    ->modalWidth('4xl')
                     ->form(fn (EditAction $action): array => [
-                        TextInput::make('precioId')
-                            ->label('Precio')
-                            ->disabled()
-                            ->afterStateHydrated(function (TextInput $component, Model $record, RelationManager $livewire){
-                                $component->state(self::$productsPriceTypesService->getProductPrice($record->product_id, $livewire->ownerRecord->pricetype_id));
-                            }),
-                        TextInput::make('existenceId')
-                            ->label('Existencia')
-                            ->disabled()
-                            ->afterStateHydrated(function (TextInput $component, Model $record){
-                                $component->state(self::$productService->getProductExistence($record->product_id));
-                            }),
-                        TextInput::make('quantity')
-                            ->required()
-                            ->label('Cantidad')
-                            ->reactive()
-                            ->afterStateUpdated(function (callable $set, $get) {
-                                $quantity = $get('quantity') == '' ? 1 : $get('quantity');
-                                $width = $get('width') == '' ? 0 : $get('width');
-                                $height = $get('height') == '' ? 0 : $get('height');
-                                $set('totalm', bcdiv(((($width * $height) * $quantity)),1,2) );
-                            }),
-                        Textarea::make('description')
-                            ->label('Descripción'),
-                        TextInput::make('height')
-                            ->label("Alto (m)")
-                            ->reactive()
-                            ->afterStateUpdated(function (callable $set, $get) {
-                                $quantity = $get('quantity') == '' ? 1 : $get('quantity');
-                                $width = $get('width') == '' ? 0 : $get('width');
-                                $height = $get('height') == '' ? 0 : $get('height');
-                                $set('totalm', bcdiv(((($width * $height) * $quantity)),1,2) );
-                            }),
-                        TextInput::make('width')
-                            ->label("Ancho (m)")
-                            ->reactive()
-                            ->afterStateUpdated(function (callable $set, $get) {
-                                $quantity = $get('quantity') == '' ? 1 : $get('quantity');
-                                $width = $get('width') == '' ? 0 : $get('width');
-                                $height = $get('height') == '' ? 0 : $get('height');
-                                $set('totalm', bcdiv(((($width * $height) * $quantity)),1,2) );
-                            }),
-                        TextInput::make('totalm')
-                            ->label("Total(m2)")
-                            ->disabled(),
-                    ])
+                        Grid::make([
+                            'default' => 1,
+                            'sm' => 2,
+                        ])
+                        ->schema([
+                            TextInput::make('precioId')
+                                ->label('Precio')
+                                ->disabled()
+                                ->afterStateHydrated(function (TextInput $component, Model $record, RelationManager $livewire){
+                                    $component->state(self::$productsPriceTypesService->getProductPrice($record->product_id, $livewire->ownerRecord->pricetype_id));
+                                }),
+                            TextInput::make('existenceId')
+                                ->label('Existencia')
+                                ->disabled()
+                                ->afterStateHydrated(function (TextInput $component, Model $record){
+                                    $component->state(self::$productService->getProductExistence($record->product_id));
+                                }),
+                            TextInput::make('quantity')
+                                ->required()
+                                ->label('Cantidad')
+                                ->columnSpan('full')
+                                ->reactive()
+                                ->afterStateUpdated(function (callable $set, $get) {
+                                    $quantity = $get('quantity') == '' ? 1 : $get('quantity');
+                                        $width = $get('width') == '' ? 1 : $get('width');
+                                        $height = $get('height') == '' ? 1 : $get('height');
+                                        if($get('height') == '' or $get('width') == ''){
+                                            $set('totalm', 0);
+                                        } else {
+                                            $set('totalm', bcdiv(((($width * $height) * $quantity)),1,2) );
+                                        }
+                                }),
+                            Textarea::make('description')
+                                ->label('Descripción')
+                                ->columnSpan('full'),
+                            TextInput::make('height')
+                                ->label("Alto (m)")
+                                ->reactive()
+                                ->afterStateUpdated(function (callable $set, $get) {
+                                    $quantity = $get('quantity') == '' ? 1 : $get('quantity');
+                                    $width = $get('width') == '' ? 1 : $get('width');
+                                        $height = $get('height') == '' ? 1 : $get('height');
+                                        if($get('height') == '' or $get('width') == ''){
+                                            $set('totalm', 0);
+                                        } else {
+                                            $set('totalm', bcdiv(((($width * $height) * $quantity)),1,2) );
+                                        }
+                                }),
+                            TextInput::make('width')
+                                ->label("Ancho (m)")
+                                ->reactive()
+                                ->afterStateUpdated(function (callable $set, $get) {
+                                    $quantity = $get('quantity') == '' ? 1 : $get('quantity');
+                                    $width = $get('width') == '' ? 1 : $get('width');
+                                    $height = $get('height') == '' ? 1 : $get('height');
+                                    if($get('height') == '' or $get('width') == ''){
+                                        $set('totalm', 0);
+                                    } else {
+                                        $set('totalm', bcdiv(((($width * $height) * $quantity)),1,2) );
+                                    }
+                                }),
+                            TextInput::make('totalm')
+                                ->label("Total(m2)")
+                                ->columnSpan('full')
+                                ->disabled(),
+                        ])//scheme ends
+                    ])//grid ends
                     ->after(function (RelationManager $livewire) {
                         //Update all prices in pivot table only if its price is zero (that means it was recently added)
                         self::$quotesProductsService->updateAllPrices($livewire->ownerRecord->id, $livewire->ownerRecord->pricetype_id);
