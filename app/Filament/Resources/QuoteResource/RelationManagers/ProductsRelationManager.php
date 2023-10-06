@@ -72,23 +72,16 @@ class ProductsRelationManager extends RelationManager
                 TextColumn::make('height')
                     ->label("Alto (m)"),
                 TextColumn::make('totalm')
-                    ->label("Total (m)")
-                    ->getStateUsing(function (Model $record) {
-                        return $record->quantity * $record->totalm;
-                    }),
-                TextColumn::make('price')
+                    ->label("Total (m)"),
+                TextColumn::make('unitPrice')
                     ->money('gtq', true)
-                    ->label("Precio")
+                    ->label("Precio Unitario")
                     ->getStateUsing(function (Model $record, RelationManager $livewire) {
                         return self::$productsPriceTypesService->getProductPrice($record->product_id, $livewire->ownerRecord->pricetype_id);
                     }),
-                TextColumn::make('subtotal')
+                TextColumn::make('price')
                     ->money('gtq', true)
-                    ->label("SubTotal")
-                    ->getStateUsing(function (Model $record) {
-                        //dd($record);
-                        return $record->quantity * $record->price;
-                    }),
+                    ->label("Total"),
             ])
             ->filters([
                 //
@@ -124,27 +117,46 @@ class ProductsRelationManager extends RelationManager
                                 ->required()
                                 ->label('Cantidad')
                                 ->columnSpan('full')
-                                ->default(1),
+                                ->default(1)
+                                ->reactive()
+                                ->afterStateUpdated(function (callable $set, $get) {
+                                    $quantity = $get('quantity') == '' ? 1 : $get('quantity');
+                                    $width = $get('width') == '' ? 1 : $get('width');
+                                    $height = $get('height') == '' ? 1 : $get('height');
+                                    if($get('height') == '' or $get('width') == ''){
+                                        $set('totalm', 0);
+                                    } else {
+                                        $set('totalm', bcdiv(((($width * $height) * $quantity)),1,2) );
+                                    }
+                                }),
                             Textarea::make('description')
                                 ->label('Descripción')
                                 ->columnSpan('full'),
                             TextInput::make('height')
                                 ->label("Alto (m)")
                                 ->reactive()
-                                ->default(1)
                                 ->afterStateUpdated(function (callable $set, $get) {
-                                    $width = $get('width') == '' ? 0 : $get('width');
-                                    $height = $get('height') == '' ? 0 : $get('height');
-                                    $set('totalm', round($width * $height, 2));
+                                    $quantity = $get('quantity') == '' ? 1 : $get('quantity');
+                                    $width = $get('width') == '' ? 1 : $get('width');
+                                    $height = $get('height') == '' ? 1 : $get('height');
+                                    if($get('height') == '' or $get('width') == ''){
+                                        $set('totalm', 0);
+                                    } else {
+                                        $set('totalm', bcdiv(((($width * $height) * $quantity)),1,2) );
+                                    }
                                 }),
                             TextInput::make('width')
                                 ->label("Ancho (m)")
                                 ->reactive()
-                                ->default(1)
                                 ->afterStateUpdated(function (callable $set, $get) {
-                                    $width = $get('width') == '' ? 0 : $get('width');
-                                    $height = $get('height') == '' ? 0 : $get('height');
-                                    $set('totalm', round($width * $height, 2));
+                                    $quantity = $get('quantity') == '' ? 1 : $get('quantity');
+                                    $width = $get('width') == '' ? 1 : $get('width');
+                                    $height = $get('height') == '' ? 1 : $get('height');
+                                    if($get('height') == '' or $get('width') == ''){
+                                        $set('totalm', 0);
+                                    } else {
+                                        $set('totalm', bcdiv(((($width * $height) * $quantity)),1,2) );
+                                    }
                                 }),
                             TextInput::make('totalm')
                                 ->label("Total(m2)")
@@ -190,24 +202,33 @@ class ProductsRelationManager extends RelationManager
                             }),
                         TextInput::make('quantity')
                             ->required()
-                            ->label('Cantidad'),
+                            ->label('Cantidad')
+                            ->reactive()
+                            ->afterStateUpdated(function (callable $set, $get) {
+                                $quantity = $get('quantity') == '' ? 1 : $get('quantity');
+                                $width = $get('width') == '' ? 0 : $get('width');
+                                $height = $get('height') == '' ? 0 : $get('height');
+                                $set('totalm', bcdiv(((($width * $height) * $quantity)),1,2) );
+                            }),
                         Textarea::make('description')
                             ->label('Descripción'),
                         TextInput::make('height')
                             ->label("Alto (m)")
                             ->reactive()
                             ->afterStateUpdated(function (callable $set, $get) {
+                                $quantity = $get('quantity') == '' ? 1 : $get('quantity');
                                 $width = $get('width') == '' ? 0 : $get('width');
                                 $height = $get('height') == '' ? 0 : $get('height');
-                                $set('totalm', round($width * $height, 2));
+                                $set('totalm', bcdiv(((($width * $height) * $quantity)),1,2) );
                             }),
                         TextInput::make('width')
                             ->label("Ancho (m)")
                             ->reactive()
                             ->afterStateUpdated(function (callable $set, $get) {
+                                $quantity = $get('quantity') == '' ? 1 : $get('quantity');
                                 $width = $get('width') == '' ? 0 : $get('width');
                                 $height = $get('height') == '' ? 0 : $get('height');
-                                $set('totalm', round($width * $height, 2));
+                                $set('totalm', bcdiv(((($width * $height) * $quantity)),1,2) );
                             }),
                         TextInput::make('totalm')
                             ->label("Total(m2)")

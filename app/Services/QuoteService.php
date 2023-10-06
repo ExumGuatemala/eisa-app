@@ -28,7 +28,7 @@ class QuoteService
         $products = $this->quotesProductsRepository->allForQuote($quote->id);
         foreach($products as $product)
         {
-            $quote->total += $product->price * $product->quantity;
+            $quote->total += $product->price;
         }
         $quote->save();
         return strval($quote->total);
