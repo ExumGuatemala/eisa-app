@@ -88,7 +88,7 @@ class ProductsRelationManager extends RelationManager
             ])
             ->headerActions([
                 AttachAction::make()
-                    ->recordSelectOptionsQuery(fn (Builder $query) => $query->where('existence','>',1))
+                    ->recordSelectOptionsQuery(fn (Builder $query) => $query->where('existence','>',0))
                     ->modalWidth('4xl')
                     ->form(fn (AttachAction $action): array => [
                         Grid::make([
