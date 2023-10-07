@@ -15,7 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Resources\Table;
 
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\TextArea;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\DateTimePicker;
 
 use Filament\Tables\Columns\TextColumn;
