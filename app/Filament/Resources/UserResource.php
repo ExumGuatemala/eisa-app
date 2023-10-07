@@ -2,19 +2,21 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Tables\Columns\TextColumn;
 use App\Models\User;
-use Filament\Forms;
+
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
+use App\Filament\Resources\UserResource\Pages;
+use App\Filament\Resources\UserResource\RelationManagers;
+
+use Filament\Forms;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DateTimePicker;
+
 use Filament\Tables;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Columns\TextColumn;
+
 
 class UserResource extends Resource
 {
@@ -27,6 +29,7 @@ class UserResource extends Resource
     protected static ?string $modelLabel = 'Usuario';
     protected static ?string $pluralModelLabel = 'Usuarios';
     protected static ?string $navigationLabel = 'Usuarios';
+
 
     public static function form(Form $form): Form
     {
@@ -42,7 +45,7 @@ class UserResource extends Resource
                     ->maxLength(255)
                     ->label("Correo Electrónico"),
                 DateTimePicker::make('email_verified_at')
-                ->label("Fecha de Verificación de Cuenta"),
+                    ->label("Fecha de Verificación de Cuenta"),
                 TextInput::make('password')
                     ->password()
                     ->required()
@@ -71,18 +74,28 @@ class UserResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
-
+    
+    public static function getRelations(): array
+    {
+        return [
+            RelationManagers\RolesRelationManager::class,
+        ];
+    }
+    
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageUsers::route('/'),
+            'index' => Pages\ListUsers::route('/'),
+            'create' => Pages\CreateUser::route('/create'),
+            'view' => Pages\ViewUser::route('/{record}'),
+            'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
-    }
+    }    
 }
