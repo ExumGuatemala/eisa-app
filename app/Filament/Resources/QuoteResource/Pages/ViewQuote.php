@@ -73,8 +73,8 @@ class ViewQuote extends ViewRecord
             
             Action::make('createWorkOrder')
                 ->color('danger')
-                ->label('Crear Orden de Trabajo')
-                ->modalHeading('Nueva Orden de Trabajo')
+                ->label('Aplicar Cotización')
+                ->modalHeading('Aplicar Cotización')
                 ->hidden(self::$workOrderService->showCreateButton($this->record))
                 ->action(function ( array $data) {
                     self::$workOrderService->saveWorkOrder($data["description"], $this->record->key, $data["start_date"], $data["end_date"]);
