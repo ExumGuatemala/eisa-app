@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class WorkOrder extends Model
 {
     use HasFactory;
+    
     protected $fillable = [
         'start_date',
         'deadline',
-        'client_name',
-        'order_key',
         'description',
+        'quote_id',
     ];
 }
