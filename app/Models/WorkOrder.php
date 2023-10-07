@@ -11,8 +11,16 @@ class WorkOrder extends Model
     
     protected $fillable = [
         'start_date',
-        'deadline',
+        'end_date',
         'description',
         'quote_id',
     ];
+
+    /**
+     * Get the quote of the WorkOrder
+     */
+    public function quote()
+    {
+        return $this->belongsTo(Quote::class);
+    }
 }

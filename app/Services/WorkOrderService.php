@@ -18,13 +18,13 @@ class WorkOrderService
         $this->quoteService = new QuoteService;
     }
     
-    public function saveWorkOrder($client_name, $description, $quote_key, $start_date, $deadline)
+    public function saveWorkOrder($description, $quote_key, $start_date, $end_date)
     {
         $work_order = new WorkOrder();
         $work_order->description = $description;
         $work_order->quote_id = $quote_key;
         $work_order->start_date = $start_date;
-        $work_order->deadline = $deadline;
+        $work_order->end_date = $end_date;
         $work_order->save();
     }
 

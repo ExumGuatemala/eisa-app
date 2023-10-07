@@ -2,16 +2,11 @@
 
 namespace App\Filament\Resources\QuoteResource\Pages;
 
-use App\Models\Client;
-
-use Filament\Forms;
-
 use App\Filament\Resources\QuoteResource;
 use Filament\Resources\Pages\ViewRecord;
 
-use Filament\Forms\Components\Wizard\Step;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Textarea;
 
 use Filament\Pages\Actions\Action;
 use Filament\Pages\Actions\EditAction;
@@ -21,10 +16,6 @@ use App\Services\WorkOrderService;
 use App\Enums\QuoteTypeEnum;
 
 use App\Policies\ChangeProductPolicy;
-
-
-
-
 use Filament\Notifications\Notification; 
 
 class ViewQuote extends ViewRecord
@@ -86,7 +77,8 @@ class ViewQuote extends ViewRecord
                 ->modalHeading('Nueva Orden de Trabajo')
                 ->hidden(self::$workOrderService->showCreateButton($this->record))
                 ->action(function ( array $data) {
-                    self::$workOrderService->saveWorkOrder(Client::find($this->record->client_id)->name, $data["description"], $this->record->key, $data["start_date"], $data["end_date"]);
+                    self::$workOrderService->saveWorkOrder($data["description"], $this->record->key, $data["start_date"], $data["end_date"]);
+                    redirect('admin/work-orders');
                 })
                 ->form([
                     DatePicker::make('start_date')
@@ -95,7 +87,7 @@ class ViewQuote extends ViewRecord
                     DatePicker::make('end_date')
                         ->label('Fecha de Entrega')
                         ->required(),
-                    MarkdownEditor::make('description')
+                    Textarea::make('description')
                         ->label('Descripción de la Orden de Trabajo')
                         ->required()
                         ->default(function () {
@@ -105,10 +97,7 @@ class ViewQuote extends ViewRecord
                                 $products = $products . $value['name'] . "\n";
                             }
                             return $products;
-                        })
-                        ->disableToolbarButtons([
-                            'attachFiles',
-                        ]),
+                        }),
                 ]),
         ];
     }

@@ -16,6 +16,8 @@ return new class extends Migration
         Schema::table('work_orders', function (Blueprint $table) {
             $table->dropColumn('client_name');
             $table->dropColumn('order_key');
+            $table->dropColumn('deadline');
+            $table->string('end_date')->after('start_date');
             $table->unsignedBigInteger('quote_id')->nullable()->after('description');
             $table->foreign('quote_id')->references('id')->on('quotes');
         });
@@ -31,8 +33,10 @@ return new class extends Migration
         Schema::table('work_orders', function (Blueprint $table) {
             $table->string('client_name');
             $table->string('order_key');
+            $table->string('deadline');
             $table->dropForeign(['quote_id']);
             $table->dropColumn('quote_id');
+            $table->dropColumn('end_date');
         });
     }
 };
