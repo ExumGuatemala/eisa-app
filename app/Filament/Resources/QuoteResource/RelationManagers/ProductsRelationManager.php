@@ -66,7 +66,7 @@ class ProductsRelationManager extends RelationManager
                     ->label("Nombre"),
                 TextColumn::make('description')
                     ->label("Descripción")
-                    ->wrap(),
+                    ->limit(25),
                 TextColumn::make('width')
                     ->label("Ancho (m)"),
                 TextColumn::make('height')

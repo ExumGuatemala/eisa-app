@@ -3,34 +3,31 @@
 namespace App\Filament\Resources\QuoteResource\Pages;
 
 use App\Filament\Resources\QuoteResource;
-use App\Services\QuoteService;
-use App\Services\WorkOrderService;
-use App\Services\ModelHasRoleService;
-use App\Enums\QuoteTypeEnum;
-use Filament\Pages\Actions;
-use Filament\Forms\Components\Wizard\Step;
-use App\Policies\ChangeProductPolicy;
+use Filament\Resources\Pages\ViewRecord;
+
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Textarea;
+
 use Filament\Pages\Actions\Action;
 use Filament\Pages\Actions\EditAction;
-use Filament\Resources\Pages\ViewRecord;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\DatePicker; 
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Textarea;
-use App\Models\Client;
+
+use App\Services\QuoteService;
+use App\Services\WorkOrderService;
+use App\Enums\QuoteTypeEnum;
+
+use App\Policies\ChangeProductPolicy;
 use Filament\Notifications\Notification; 
 
 class ViewQuote extends ViewRecord
 {
     protected static string $resource = QuoteResource::class;
-    protected $listeners = ['refresh'=>'refreshForm'];
+
     protected static $quoteService;
     protected static $workOrderService;
     protected static $userPolicy;
 
+    protected $listeners = ['refresh'=>'refreshForm'];
     
-
     public function __construct() {
         static::$quoteService = new QuoteService;
         static::$workOrderService = new WorkOrderService;
@@ -55,6 +52,7 @@ class ViewQuote extends ViewRecord
             EditAction::make()
                 ->label('Cambiar Tipo de Precio')
                 ->hidden(self::$userPolicy->showChangePriceTypeProduct(auth()->user()) && QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($this->record->id)),
+                
             Action::make('Cambiar a Creada')
                 ->action(function () {
                     self::$quoteService->changeStateToCreated($this->record->id);
@@ -72,53 +70,35 @@ class ViewQuote extends ViewRecord
                     return QuoteTypeEnum::CREATED === self::$quoteService->getQuoteStatus($this->record->id);
                 })
                 ->hidden(QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($this->record->id) ),
-            Action::make('Crear una orden de trabajo')
-                ->steps([
-                    Step::make('start_date')
-                        ->label('Ingrese fecha de inicio')
-                        ->description('Fecha de inicio para la orden de trabajo')
-                        ->schema([
-                            DatePicker::make('start_date')
-                                ->required()
-                                ->label('Fecha de inicio.')
-                        ]),
-                    Step::make('deadline')
-                        ->label('Ingrese fecha de entrega')
-                        ->description('Fecha de entrega para la orden de trabajo')
-                        ->schema([
-                            DatePicker::make('deadline')
-                                ->label('Fecha de entrega.')
-                                ->required()
-                        ]),
-                    Step::make('description')
-                        ->label('Descripcion')
-                        ->description('Puede editar la descripción de la orden de trabajo')
-                        
-                        ->schema([
-                            Textarea::make('description')
-                                ->label('Descripción')
-                                ->required()
-                                ->default(function () {
-                                    $this->record->products;
-                                    $products = "";
-                                    foreach ($this->record->products as $value) {
-                                        $products = $products . $value['name'] . "\n";
-                                    }
-                                    return $products;
-                                })
-                                
-                        ])
-                ]) 
-                ->startOnStep(1)
+            
+            Action::make('createWorkOrder')
+                ->color('danger')
+                ->label('Crear Orden de Trabajo')
+                ->modalHeading('Nueva Orden de Trabajo')
+                ->hidden(self::$workOrderService->showCreateButton($this->record))
                 ->action(function ( array $data) {
-                    self::$workOrderService->saveWorkOrder(Client::find($this->record->client_id)->name, $data["description"], $this->record->key, $data["start_date"], $data["deadline"]);
-                    Notification::make() 
-                        ->title('Creada orden de trabajo')
-                        ->success()
-                        ->send(); 
+                    self::$workOrderService->saveWorkOrder($data["description"], $this->record->key, $data["start_date"], $data["end_date"]);
+                    redirect('admin/work-orders');
                 })
-                ->hidden(QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($this->record->id) || self::$workOrderService->countByKey($this->record->key) > 0),
-                //->hidden(QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($this->record->id)),
+                ->form([
+                    DatePicker::make('start_date')
+                        ->label('Fecha de Inicio')
+                        ->required(),
+                    DatePicker::make('end_date')
+                        ->label('Fecha de Entrega')
+                        ->required(),
+                    Textarea::make('description')
+                        ->label('Descripción de la Orden de Trabajo')
+                        ->required()
+                        ->default(function () {
+                            $this->record->products;
+                            $products = "";
+                            foreach ($this->record->products as $value) {
+                                $products = $products . $value['name'] . "\n";
+                            }
+                            return $products;
+                        }),
+                ]),
         ];
     }
 }

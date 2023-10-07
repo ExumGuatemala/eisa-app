@@ -4,9 +4,9 @@ namespace App\Filament\Resources\WorkOrderResource\Pages;
 
 use App\Filament\Resources\WorkOrderResource;
 use Filament\Pages\Actions;
-use Filament\Resources\Pages\ListRecords;
+use Filament\Resources\Pages\ViewRecord;
 
-class ListWorkOrders extends ListRecords
+class ViewWorkOrder extends ViewRecord
 {
     protected static string $resource = WorkOrderResource::class;
 
