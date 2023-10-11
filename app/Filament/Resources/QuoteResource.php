@@ -7,6 +7,7 @@ use App\Filament\Resources\QuoteResource\RelationManagers;
 use App\Filament\Resources\TextInput\Mask;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms;
@@ -109,7 +110,18 @@ class QuoteResource extends Resource
                     ->dateTime(),
             ])
             ->filters([
-                //
+                Filter::make('inProgress')
+                    ->query(fn (Builder $query): Builder => $query->where('status', "En Progreso"))
+                    ->label('En Progreso')
+                    ->toggle(),
+                Filter::make('created')
+                    ->query(fn (Builder $query): Builder => $query->where('status', "Creada"))
+                    ->label('Creada')
+                    ->toggle(),
+                Filter::make('Finalizada')
+                    ->query(fn (Builder $query): Builder => $query->where('status', "Finalizada"))
+                    ->label('Finalizada')
+                    ->toggle(),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
