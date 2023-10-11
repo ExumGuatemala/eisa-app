@@ -39,6 +39,10 @@ class WorkOrderResource extends Resource
     {
         return $form
             ->schema([
+                TextInput::make('clientId')
+                    ->label("Cliente")
+                    ->disabled()
+                    ->columnSpan('full'),
                 TextInput::make('quote_id')
                     ->label("Código de Orden")
                     ->disabled()
