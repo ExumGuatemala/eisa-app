@@ -19,6 +19,10 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\DateTimePicker;
 
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Filters\Filter;
+
+use App\Services\WorkOrderService;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -43,6 +47,10 @@ class WorkOrderResource extends Resource
                     ->label("Cliente")
                     ->disabled()
                     ->columnSpan('full'),
+                TextInput::make('state')
+                    ->label("Estado")
+                    ->disabled()
+                    ->columnSpan('full'),
                 TextInput::make('quote_id')
                     ->label("Código de Orden")
                     ->disabled()
@@ -63,15 +71,16 @@ class WorkOrderResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('quote_id')
-                    ->label("Código de Orden")
-                    ->searchable(),
                 TextColumn::make('client_name')
                     ->label("Cliente")
-                    ->searchable()
                     ->getStateUsing(function (Model $record) {
                         return $record->quote->client->name;
                     }),
+                TextColumn::make('quote_id')
+                    ->label("Código de Orden")
+                    ->searchable(),
+                TextColumn::make('state')
+                    ->label('Estado'),
                 TextColumn::make('start_date')
                     ->label("Fecha de Inicio")
                     ->dateTime(),
@@ -80,10 +89,37 @@ class WorkOrderResource extends Resource
                     ->dateTime(),
             ])
             ->filters([
-                //
+                Filter::make('inProgress')
+                    ->query(fn (Builder $query): Builder => $query->where('state', "En Progreso"))
+                    ->label('En Progreso')
+                    ->toggle(),
+                Filter::make('created')
+                    ->query(fn (Builder $query): Builder => $query->where('state', "Creada"))
+                    ->label('Creada')
+                    ->toggle(),
+                Filter::make('Finalizada')
+                    ->query(fn (Builder $query): Builder => $query->where('state', "Finalizada"))
+                    ->label('Finalizada')
+                    ->toggle(),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                Action::make("nextStatus")
+                    ->label(function (Model $record) {
+                        $workOrderService = new WorkOrderService();
+                        return "Cambiar a " . $workOrderService->getNextOrderStatus($record->state);
+                    })
+                    ->requiresConfirmation()
+                    ->modalHeading('Cambiar estado')
+                    ->modalSubheading('¿Seguro que desea cambiar al siguiente estado?')
+                    ->modalButton('Si, seguro')
+                    ->action(function (Model $record) {
+                        $workOrderService = new WorkOrderService();
+                        $workOrderService->changeToNextOrderStatus($record->id, $record->state);
+                    })
+                    ->hidden(function (Model $record) {
+                        $workOrderService = new WorkOrderService();
+                        return $workOrderService->getLastWorkOrderState() == $record->state ? true : false;
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),

@@ -2,11 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\Quote;
 use App\Models\ProductsPriceTypes;
 use App\Repositories\ProductsPriceTypesRepository;
 use App\Repositories\QuoteRepository;
 use App\Repositories\QuotesProductsRepository;
-use App\Enums\QuoteTypeEnum;
+use App\Enums\QuoteStateEnum;
 
 class QuoteService
 {
@@ -39,14 +40,15 @@ class QuoteService
         return $this->productsPriceTypesRepository->getProductPrice($clientId, $productId);
     }
 
-    public function getQuoteStatus($quoteId)
+    public function getQuoteState($quoteId)
     {
         return $this->quoteRepository->find($quoteId)->status;
     }
 
-    public function changeStateToCreated($quoteId)
+    public function changeStateTo(Quote $quote, $state)
     {
-        $this->quoteRepository->updateById($quoteId,['status' => QuoteTypeEnum::CREATED]);
+        $quote->state = $state;
+        $quote->save();
     }
 
     public function updateProductQuotePrices($priceTypeId,$productId, $newPrice){

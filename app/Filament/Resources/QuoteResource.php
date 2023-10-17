@@ -18,9 +18,10 @@ use Filament\Pages\Actions\Action;
 
 use Filament\Tables;
 use App\Models\Quote;
-use App\Models\QuoteState;
 use App\Models\Client;
 use App\Models\PriceType;
+
+use App\Enums\QuoteStateEnum;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -63,7 +64,7 @@ class QuoteResource extends Resource
                     ->disabled()
                     ->displayFormat('d/m/Y H:i:s')
                     ->hiddenOn('create'),
-                TextInput::make('status')
+                TextInput::make('state')
                     ->label('Estado')
                     ->disabled()
                     ->hiddenOn('create'),
@@ -88,12 +89,9 @@ class QuoteResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('key')
-                    ->label('Codigo'),
-                TextColumn::make('status')
-                    ->label('Estado'),
                 TextColumn::make('client_id')
                     ->label('Cliente')
+                    ->sortable()
                     ->searchable(query: function (Builder $query, string $search): Builder {
                         return $query
                             ->whereHas('client', function (Builder $q) use($search) {
@@ -102,7 +100,12 @@ class QuoteResource extends Resource
                     })
                     ->getStateUsing(function (Model $record) {
                         return $record->client->name;
-                    }),    
+                    }), 
+                TextColumn::make('key')
+                    ->label('Codigo'),
+                TextColumn::make('state')
+                    ->label('Estado'),
+                   
                 TextColumn::make('total')
                     ->money('gtq', true)
                     ->default(0),
@@ -111,17 +114,22 @@ class QuoteResource extends Resource
             ])
             ->filters([
                 Filter::make('inProgress')
-                    ->query(fn (Builder $query): Builder => $query->where('status', "En Progreso"))
+                    ->query(fn (Builder $query): Builder => $query->where('state', QuoteStateEnum::IN_PROGRESS))
                     ->label('En Progreso')
                     ->toggle(),
                 Filter::make('created')
-                    ->query(fn (Builder $query): Builder => $query->where('status', "Creada"))
+                    ->query(fn (Builder $query): Builder => $query->where('state', QuoteStateEnum::CREATED))
                     ->label('Creada')
                     ->toggle(),
-                Filter::make('Finalizada')
-                    ->query(fn (Builder $query): Builder => $query->where('status', "Finalizada"))
-                    ->label('Finalizada')
+                Filter::make('approved')
+                    ->query(fn (Builder $query): Builder => $query->where('state', QuoteStateEnum::APPROVED))
+                    ->label('Aprobada')
                     ->toggle(),
+                Filter::make('applied')
+                    ->query(fn (Builder $query): Builder => $query->where('state', QuoteStateEnum::APPLIED))
+                    ->label('Aplicada')
+                    ->toggle(),
+                
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
