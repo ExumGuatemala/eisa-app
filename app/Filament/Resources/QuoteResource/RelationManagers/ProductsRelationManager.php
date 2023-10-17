@@ -17,7 +17,7 @@ use App\Services\QuoteService;
 use App\Services\QuotesProductsService;
 use App\Services\ProductsPriceTypesService;
 use App\Services\ProductService;
-use App\Enums\QuoteTypeEnum;
+use App\Enums\QuoteStateEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -172,11 +172,11 @@ class ProductsRelationManager extends RelationManager
                         $livewire->emit('refresh');
                     })
                     ->disabled(function (RelationManager $livewire) {
-                        return QuoteTypeEnum::CREATED === self::$quoteService->getQuoteStatus($livewire->ownerRecord->id);
+                        return QuoteStateEnum::CREATED === self::$quoteService->getQuoteState($livewire->ownerRecord->id);
                     })
                     ->hidden(
                         function (RelationManager $livewire) {
-                            if (QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($livewire->ownerRecord->id)){
+                            if (QuoteStateEnum::IN_PROGRESS != $livewire->ownerRecord->state){
                                 return TRUE;
                             } else {
                                 return FALSE;
@@ -264,7 +264,7 @@ class ProductsRelationManager extends RelationManager
                     ->hidden(
                         function (RelationManager $livewire) {
                             //Update all prices in pivot table only if its price is zero (that means it was recently added)
-                            if (QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($livewire->ownerRecord->id)){
+                            if (QuoteStateEnum::IN_PROGRESS != self::$quoteService->getQuoteState($livewire->ownerRecord->id)){
                                 return TRUE;
                             } else {
                                 return FALSE;
@@ -281,7 +281,7 @@ class ProductsRelationManager extends RelationManager
                     ->hidden(
                         function (RelationManager $livewire) {
                             //Update all prices in pivot table only if its price is zero (that means it was recently added)
-                            if (QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($livewire->ownerRecord->id)){
+                            if (QuoteStateEnum::IN_PROGRESS != self::$quoteService->getQuoteState($livewire->ownerRecord->id)){
                                 return True;
                             } else {
                                 return false;

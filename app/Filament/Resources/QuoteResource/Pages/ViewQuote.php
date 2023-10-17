@@ -13,7 +13,7 @@ use Filament\Pages\Actions\EditAction;
 
 use App\Services\QuoteService;
 use App\Services\WorkOrderService;
-use App\Enums\QuoteTypeEnum;
+use App\Enums\QuoteStateEnum;
 
 use App\Policies\ChangeProductPolicy;
 use Filament\Notifications\Notification; 
@@ -51,13 +51,14 @@ class ViewQuote extends ViewRecord
         return [
             EditAction::make()
                 ->label('Cambiar Tipo de Precio')
-                ->hidden(self::$userPolicy->showChangePriceTypeProduct(auth()->user()) && QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($this->record->id)),
+                ->hidden(self::$userPolicy->showChangePriceTypeProduct(auth()->user()) && QuoteStateEnum::IN_PROGRESS != self::$quoteService->getQuoteState($this->record->id)),
                 
             Action::make('Cambiar a Creada')
+                ->label('Cambiar a Creada')
                 ->action(function () {
-                    self::$quoteService->changeStateToCreated($this->record->id);
+                    self::$quoteService->changeStateTo($this->record, QuoteStateEnum::CREATED);
                     $this->refreshFormData([
-                        'status',
+                        'state',
                     ]);
                     $this->fillForm();
                     redirect('admin/quotes/' . $this->record->id);
@@ -67,17 +68,19 @@ class ViewQuote extends ViewRecord
                 ->modalSubheading("Una vez que se cree la cotizacion, ya no se podra cambiar. Seguro que desea continuar?")
                 ->modalButton('Si!')
                 ->hidden(function () {
-                    return QuoteTypeEnum::CREATED === self::$quoteService->getQuoteStatus($this->record->id);
-                })
-                ->hidden(QuoteTypeEnum::IN_PROGRESS != self::$quoteService->getQuoteStatus($this->record->id) ),
+                    return QuoteStateEnum::IN_PROGRESS != $this->record->state;
+                }),
             
             Action::make('createWorkOrder')
                 ->color('danger')
                 ->label('Aplicar Cotización')
                 ->modalHeading('Aplicar Cotización')
-                ->hidden(self::$workOrderService->showCreateButton($this->record))
+                ->hidden(function () {
+                    return self::$workOrderService->showCreateButton($this->record);
+                })
                 ->action(function ( array $data) {
                     self::$workOrderService->saveWorkOrder($data["description"], $this->record->key, $data["start_date"], $data["end_date"]);
+                    self::$quoteService->changeStateTo($this->record, QuoteStateEnum::APPLIED);
                     redirect('admin/work-orders');
                 })
                 ->form([

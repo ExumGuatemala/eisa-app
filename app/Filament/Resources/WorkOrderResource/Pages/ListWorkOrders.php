@@ -5,6 +5,8 @@ namespace App\Filament\Resources\WorkOrderResource\Pages;
 use App\Filament\Resources\WorkOrderResource;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Tables\Filters\Layout;
+
 
 class ListWorkOrders extends ListRecords
 {
@@ -15,5 +17,10 @@ class ListWorkOrders extends ListRecords
         return [
             //
         ];
+    }
+
+    protected function getTableFiltersLayout(): ?string
+    {
+        return Layout::AboveContent;
     }
 }
