@@ -18,9 +18,4 @@ class ListWorkOrders extends ListRecords
             //
         ];
     }
-
-    protected function getTableFiltersLayout(): ?string
-    {
-        return Layout::AboveContent;
-    }
 }
