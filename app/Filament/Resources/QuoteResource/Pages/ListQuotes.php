@@ -10,11 +10,6 @@ use Filament\Tables\Filters\Layout;
 class ListQuotes extends ListRecords
 {
     protected static string $resource = QuoteResource::class;
- 
-    protected function getTableFiltersLayout(): ?string
-    {
-        return Layout::AboveContent;
-    }
 
     protected function getActions(): array
     {
