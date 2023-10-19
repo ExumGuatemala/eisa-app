@@ -83,10 +83,10 @@ class WorkOrderResource extends Resource
                     ->label('Estado'),
                 TextColumn::make('start_date')
                     ->label("Fecha de Inicio")
-                    ->dateTime(),
+                    ->dateTime('d/m/Y'),
                 TextColumn::make('end_date')
                     ->label("Fecha Aprox. Entrega")
-                    ->dateTime(),
+                    ->dateTime('d/m/Y'),
             ])
             ->filters([
                 Filter::make('all')
