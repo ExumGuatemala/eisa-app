@@ -70,4 +70,9 @@ class WorkOrderService
     {
         return WorkOrderState::orderBy('order', "DESC")->first()->name;
     }
+
+    public function getByQuoteId($quote_id)
+    {
+        return WorkOrder::whereQuoteId($quote_id)->first();
+    }
 }
