@@ -113,6 +113,11 @@ class QuoteResource extends Resource
                     ->dateTime(),
             ])
             ->filters([
+                Filter::make('all')
+                    ->query(fn (Builder $query): Builder => $query)
+                    ->label('Todas')
+                    ->default()
+                    ->toggle(),
                 Filter::make('inProgress')
                     ->query(fn (Builder $query): Builder => $query->where('state', QuoteStateEnum::IN_PROGRESS))
                     ->label('En Progreso')
