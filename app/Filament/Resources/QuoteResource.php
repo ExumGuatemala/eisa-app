@@ -110,7 +110,8 @@ class QuoteResource extends Resource
                     ->money('gtq', true)
                     ->default(0),
                 TextColumn::make('created_at')
-                    ->dateTime(),
+                    ->label("Fecha de Creación")
+                    ->dateTime('d/m/Y H:i:s'),
             ])
             ->filters([
                 Filter::make('all')
@@ -137,8 +138,7 @@ class QuoteResource extends Resource
                 
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                //
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
