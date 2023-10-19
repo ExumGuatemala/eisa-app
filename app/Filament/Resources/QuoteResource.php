@@ -14,7 +14,7 @@ use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
-use Filament\Pages\Actions\Action;
+use Filament\Tables\Actions\Action;
 
 use Filament\Tables;
 use App\Models\Quote;
@@ -22,6 +22,7 @@ use App\Models\Client;
 use App\Models\PriceType;
 
 use App\Enums\QuoteStateEnum;
+use App\Services\WorkOrderService;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -138,22 +139,21 @@ class QuoteResource extends Resource
                 
             ])
             ->actions([
-                //
+                Action::make("viewWorkOrder")
+                    ->label("Ver Orden de Trabajo")
+                    ->action(function (Model $record) {
+                        $workOrderService = new WorkOrderService();
+                        $id = $workOrderService->getByQuoteId($record->id)->id;
+                        redirect()->intended('/admin/work-orders/'.str($id));
+                    })
+                    ->hidden(function (Model $record) {
+                        return QuoteStateEnum::APPLIED != $record->state;
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
-
-    public static function getActions(): array
-    {
-        return [
-            Action::make('delete')
-                ->action(fn () => $this->record->delete())
-                ->requiresConfirmation(),
-        ];
-    }
-
 
     public static function getRelations(): array
     {
