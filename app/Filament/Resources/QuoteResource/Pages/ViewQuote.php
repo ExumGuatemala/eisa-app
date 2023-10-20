@@ -102,6 +102,16 @@ class ViewQuote extends ViewRecord
                             return $products;
                         }),
                 ]),
+            Action::make("viewWorkOrder")
+                ->label("Ver Orden de Trabajo")
+                ->action(function () {
+                    $workOrderService = new WorkOrderService();
+                    $id = $workOrderService->getByQuoteId($this->record->id)->id;
+                    redirect()->intended('/admin/work-orders/'.str($id));
+                })
+                ->hidden(function () {
+                    return QuoteStateEnum::APPLIED != $this->record->state;
+                }),
         ];
     }
 }
