@@ -2,22 +2,26 @@
 
 namespace App\Filament\Resources;
 
+use App\Models\Product;
+use App\Enums\ProductTypeEnum;
+
+use Filament\Forms;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+
+use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\BadgeColumn;
+
 use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers;
-use App\Filament\Resources\TextInput\Mask;
-use Filament\Forms\Components\TextInput;
-use Filament\Tables\Columns\TextColumn;
-use App\Models\Product;
-use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
-use Filament\Tables;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Actions\DeleteAction;
+
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Closure;
 
 class ProductResource extends Resource
 {
@@ -35,22 +39,31 @@ class ProductResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')
+                    ->label("Nombre")
                     ->required()
                     ->maxLength(255)
-                    ->columnSpan('full')
-                    ->label("Nombre"),
+                    ->columnSpan("full"),
                 TextInput::make('sale_price')
                     ->required()
                     ->mask(fn (TextInput\Mask $mask) => $mask->money(prefix: 'Q.', thousandsSeparator: ',', decimalPlaces: 2))
                     ->label("Precio de Venta"),
-                TextInput::make('existence')
-                    ->numeric()
-                    ->required()
-                    ->label("Existencia"),
                 TextInput::make('order')
                     ->numeric()
                     ->maxLength(255)
                     ->label("Orden de Visualización"),
+                Select::make('type')
+                    ->label("Tipo de Producto")
+                    ->options([
+                        ProductTypeEnum::SERVICE => 'Productos y Servicios',
+                        ProductTypeEnum::PRODUCT => 'Producto Físico',
+                    ])
+                    ->reactive(),
+                TextInput::make('existence')
+                    ->numeric()
+                    ->label("Existencia")
+                    ->hidden(
+                        fn (Closure $get): bool => $get('type') != ProductTypeEnum::PRODUCT
+                    ),
             ]);
     }
 
@@ -64,6 +77,15 @@ class ProductResource extends Resource
                 TextColumn::make('sale_price')
                     ->money('gtq', true)
                     ->label("Precio de Venta"),
+                BadgeColumn::make('type')
+                    ->label("Tipo")
+                    ->color(static function ($state): string {
+                        if ($state === ProductTypeEnum::PRODUCT) {
+                            return 'success';
+                        }
+                        
+                        return 'danger';
+                    }),
                 TextColumn::make('existence')
                     ->label("Existencia"),
                 TextColumn::make('created_at')
@@ -74,19 +96,28 @@ class ProductResource extends Resource
                 //
             ])
             ->actions([
-                ViewAction::make(),
-                EditAction::make(),
-                DeleteAction::make(),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
-
+    
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+    
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageProducts::route('/'),
+            'index' => Pages\ListProducts::route('/'),
+            'create' => Pages\CreateProduct::route('/create'),
+            'view' => Pages\ViewProduct::route('/{record}'),
+            'edit' => Pages\EditProduct::route('/{record}/edit'),
         ];
-    }
+    }    
 }
