@@ -17,6 +17,7 @@ use Filament\Resources\Table;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\Action;
@@ -64,6 +65,12 @@ class WorkOrderResource extends Resource
                 Textarea::make('description')
                     ->columnSpan('full')
                     ->disabled(),
+                SpatieMediaLibraryFileUpload::make('Imagenes')
+                    ->columnSpan('full')
+                    ->multiple()
+                    ->conversion('thumb')
+                    ->enableOpen()
+                    ->visibility('public'),
             ]);
     }
 

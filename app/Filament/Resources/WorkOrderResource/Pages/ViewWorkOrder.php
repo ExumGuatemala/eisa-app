@@ -7,6 +7,7 @@ use App\Models\Quote;
 use App\Filament\Resources\WorkOrderResource;
 use Filament\Pages\Actions;
 use Filament\Pages\Actions\Action;
+use Filament\Pages\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 use App\Services\WorkOrderService;
 
@@ -29,6 +30,8 @@ class ViewWorkOrder extends ViewRecord
     protected function getActions(): array
     {
         return [
+            EditAction::make()
+                ->label('Agregar Imagenes'),
             Action::make("nextStatus")
                 ->label(function () {
                     return "Cambiar a " . self::$workOrderService->getNextOrderStatus($this->record->state);
