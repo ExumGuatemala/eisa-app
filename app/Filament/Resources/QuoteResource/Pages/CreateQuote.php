@@ -10,6 +10,7 @@ use App\Services\QuoteService;
 class CreateQuote extends CreateRecord
 {
     protected static string $resource = QuoteResource::class;
+    
     protected function afterCreate(): void
     {
         $id = $this->record->id;

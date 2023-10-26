@@ -14,6 +14,7 @@ class Product extends Model
         'existence',
         'order',
         'sale_price',
+        'type'
     ];
 
     /**
