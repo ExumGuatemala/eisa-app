@@ -20,6 +20,8 @@ use Filament\Tables;
 use App\Models\Quote;
 use App\Models\Client;
 use App\Models\PriceType;
+use App\Models\Departamento;
+use App\Models\Municipio;
 
 use App\Enums\QuoteStateEnum;
 use App\Services\WorkOrderService;
@@ -55,8 +57,74 @@ class QuoteResource extends Resource
                     ->afterStateUpdated(function (callable $set, $get) {
                         $client = Client::find(($get('clientId')));
                         $set('pricetypeId', $client->pricetype_id);
-                    }),
-                    TextInput::make('key')
+                    })
+                    ->createOptionForm([
+                        TextInput::make('name')
+                            ->required()
+                            ->maxLength(255)
+                            ->label("Nombre Completo")
+                            ->columnSpan('full'),
+                        TextInput::make('email')
+                            ->email()
+                            ->maxLength(255)
+                            ->label("Correo Electrónico"),
+                        TextInput::make('key')
+                            ->label("Código")
+                            ->disabled()
+                            ->afterStateHydrated(function (TextInput $component, $state) {
+                                if(!$state){
+                                    $component->state(strtoupper(substr(bin2hex(random_bytes(ceil(8 / 2))), 0, 8)));
+                                }
+                            }),
+                        TextInput::make('phone1')
+                            ->mask(fn (TextInput\Mask $mask) => $mask->pattern('0000-0000'))
+                            ->required()
+                            ->maxLength(255)
+                            ->label("Teléfono 1"),
+                        TextInput::make('phone2')
+                            ->mask(fn (TextInput\Mask $mask) => $mask->pattern('0000-0000'))
+                            ->maxLength(255)
+                            ->label("Teléfono 2"),
+                        Select::make('tipoClienteId')
+                            ->label('Tipo de Cliente')
+                            ->relationship('type', 'name'),
+                        Select::make('tipoPrecioId')
+                            ->label('Tipo de Precio')
+                            ->relationship('priceType', 'name'),
+                        TextInput::make('address')
+                            ->required()
+                            ->columnSpan('full')
+                            ->label("Dirección"),
+
+                        Select::make('departamentoId')
+                            ->label('Departamento')
+                            ->afterStateHydrated(function (Model|null $record, Select $component) {
+                                $municipio = $record == null ? $record : Municipio::find($record->municipio_id);
+                                if(!$municipio){
+                                    $component->state(13);
+                                } else {
+                                    $component->state($municipio->departamento->id);
+                                }
+                            })
+                            ->options(Departamento::all()->pluck('name','id')->toArray())
+                            ->reactive()
+                            ->afterStateUpdated(fn (callable $set) => $set('municipioId', null)),
+
+                        Select::make('municipioId')
+                            ->label('Municipio')
+                            ->relationship('municipio', 'name')
+                            ->options(function (callable $get) {
+                                $departamento = Departamento::find($get('departamentoId'));
+
+                                if(!$departamento){
+                                    return Municipio::all()->pluck('name','id');
+                                }
+
+                                return $departamento->municipios->pluck('name','id');
+
+                            }),
+                    ]),
+                TextInput::make('key')
                     ->label("Código")
                     ->disabled()
                     ->default('Asignado cuando se cree'),
