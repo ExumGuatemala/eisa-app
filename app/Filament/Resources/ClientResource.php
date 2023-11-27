@@ -6,10 +6,12 @@ use App\Filament\Resources\ClientResource\Pages;
 use App\Filament\Resources\ClientResource\RelationManagers;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
 use Filament\Tables\Columns\TextColumn;
 use App\Models\Client;
 use App\Models\Departamento;
 use App\Models\Municipio;
+use App\Enums\ClientStateEnum;
 use Closure;
 use Filament\Forms;
 use Filament\Resources\Form;
@@ -100,7 +102,13 @@ class ClientResource extends Resource
                         return $departamento->municipios->pluck('name','id');
 
                     }),
-            ]);
+                Select::make('state')
+                    ->label("Estado")
+                    ->options([
+                        ClientStateEnum::ENABLED => ClientStateEnum::ENABLED,
+                        ClientStateEnum::DISABLED => ClientStateEnum::DISABLED,
+                    ]),
+                ]);
     }
 
     public static function table(Table $table): Table
