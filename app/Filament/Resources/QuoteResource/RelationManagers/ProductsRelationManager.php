@@ -89,7 +89,9 @@ class ProductsRelationManager extends RelationManager
             ->headerActions([
                 AttachAction::make()
                     ->recordSelectOptionsQuery(fn (Builder $query) => 
-                        $query->orWhere(function ($query) {
+                        
+                        $query->where('type', 'servicio')
+                            ->orWhere(function ($query) {
                             $query->where('type', 'producto')
                                 ->where('existence', '>', 0);
                         })
