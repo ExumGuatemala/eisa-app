@@ -41,8 +41,8 @@ class QuoteRepository
 
     public function updateProductPrices($priceTypeId,$productId, $newPrice){
         $quotes = Quote::where('pricetype_id', $priceTypeId)
-        ->where('status','En Progreso')
-        ->get();
+            ->where('state','En Progreso')
+            ->get();
         foreach ($quotes as $quote) {
             $this->quotesProductsRepository->updatesProductsPrices($quote->id, $newPrice, $productId);
         }
