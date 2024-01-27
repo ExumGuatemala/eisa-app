@@ -49,9 +49,16 @@ class QuoteResource extends Resource
                 Select::make('clientId')
                     ->label('Cliente')
                     ->columnSpan('full')
+                    ->allowHtml()
                     ->searchable()
-                    ->options(Client::all()->pluck('name', 'id'))
                     ->relationship('client', 'name')
+                    ->options(function () {
+                        $clients = Client::All();
+                        
+                        return $clients->mapWithKeys(function ($client) {
+                            return [$client->id => $client->state == "Habilitado" ? $client->name : $client->name . " - Deshabilitado"];
+                        })->toArray();
+                    })
                     ->required()
                     ->reactive()
                     ->afterStateUpdated(function (callable $set, $get) {
