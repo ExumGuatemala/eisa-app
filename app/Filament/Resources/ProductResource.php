@@ -52,6 +52,7 @@ class ProductResource extends Resource
                     ->maxLength(255)
                     ->label("Orden de Visualización"),
                 Select::make('type')
+                    ->required()
                     ->label("Tipo de Producto")
                     ->options([
                         ProductTypeEnum::SERVICE => 'Productos y Servicios',

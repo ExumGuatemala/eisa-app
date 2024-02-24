@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('existence');
-            $table->string('order');
+            $table->string('order')->nullable();
             $table->decimal('sale_price', 9, 2);
             $table->timestamps();
         });
